@@ -4,6 +4,7 @@
 @using RiotAccountManager.MAUI.Services.RiotClientService
 @inject AccountRepository Repository
 @inject IRiotClientService RiotClient
+@inject NavigationManager NavigationManager
 
 <h3>Dashboard</h3>
 
@@ -23,6 +24,7 @@
             <td>@acc.Nickname</td>
             <td>
                 <button @onclick="@(() => Login(acc))" class="btn btn-success">Login</button>
+                <button @onclick="@(() => ShowDetails(acc))" class="btn btn-info">Details</button>
             </td>
         </tr>
     }
@@ -40,5 +42,10 @@
     private async Task Login(Account account)
     {
         await RiotClient.AutoLogin(account);
+    }
+
+    private void ShowDetails(Account account)
+    {
+        NavigationManager.NavigateTo($"/accountdetails/{account.Username}");
     }
 }

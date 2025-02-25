@@ -1,0 +1,91 @@
+﻿@page "/accountDetails/{Username}"
+@using RiotAccountManager.MAUI.Data.Models
+@using RiotAccountManager.MAUI.Data.Repositories
+@using RiotAccountManager.MAUI.Services.LcuService
+@inject AccountRepository Repository
+@inject ILcuService LcuService
+
+@if (account != null)
+{
+    <p><strong>Login:</strong> @account.Username</p>
+    <p><strong>Nickname:</strong> @account.Nickname</p>
+    
+    @if (!isClientRunning)
+    {
+        <p class="text-danger">League of Legends klient nie jest uruchomiony.</p>
+    }
+
+    <button class="btn btn-primary" @onclick="FetchRankedData">
+        Pobierz dane Ranked
+    </button>
+
+    @if (rankedEntry != null)
+    {
+        <hr />
+        <h4>Dane Ranked:</h4>
+        <p><strong>Queue Type:</strong> @rankedEntry.QueueType</p>
+        <p><strong>Tier:</strong> @rankedEntry.Tier</p>
+        <p><strong>Division:</strong> @rankedEntry.Division</p>
+        <p><strong>League Points:</strong> @rankedEntry.LeaguePoints</p>
+        <p><strong>Wins:</strong> @rankedEntry.Wins</p>
+        <p><strong>Losses:</strong> @rankedEntry.Losses</p>
+    }
+}
+else
+{
+    <p>Nie znaleziono konta.</p>
+}
+
+@code {
+    [Parameter]
+    public string Username { get; set; }
+
+    private Account account;
+    private RankedEntryDto rankedEntry;
+    private bool isClientRunning = false;
+    private Timer refreshTimer;
+
+    protected override async void OnInitialized()
+    {
+        account = Repository.GetAll().FirstOrDefault(a => a.Username == Username);
+
+        await CheckClientStatusAsync();
+
+        if (isClientRunning)
+        {
+            refreshTimer = new Timer(async _ =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    await FetchRankedData();
+                    StateHasChanged();
+                });
+            }, null, 0, 10000);
+        }
+    }
+    
+    private async Task CheckClientStatusAsync()
+    {
+        var stats = await LcuService.GetAsync<CurrentRankedStatsDto>("/lol-ranked/v1/current-ranked-stats");
+        isClientRunning = stats != null;
+        if (isClientRunning)
+        {
+            rankedEntry = stats.HighestRankedEntry;
+        }
+    }
+
+    private async Task FetchRankedData()
+    {
+        var stats = await LcuService.GetAsync<CurrentRankedStatsDto>("/lol-ranked/v1/current-ranked-stats");
+        if (stats != null)
+        {
+            isClientRunning = true;
+            rankedEntry = stats.HighestRankedEntry;
+        }
+        else
+        {
+            isClientRunning = false;
+            rankedEntry = null;
+        }
+    }
+}
