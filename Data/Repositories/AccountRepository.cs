@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RiotAccountManager.MAUI.Data.Models;
 using RiotAccountManager.MAUI.Services;
+using RiotAccountManager.MAUI.Services.EncryptionService;
 
 namespace RiotAccountManager.MAUI.Data.Repositories;
 
@@ -12,9 +13,9 @@ public class AccountRepository
         "accounts.json"
     );
 
-    private readonly EncryptionService _encryption;
+    private readonly IEncryptionService _encryption;
 
-    public AccountRepository(EncryptionService encryption)
+    public AccountRepository(IEncryptionService encryption)
     {
         _encryption = encryption;
         EnsureDirectoryExists();

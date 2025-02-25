@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Data.Repositories;
 using RiotAccountManager.MAUI.Services;
+using RiotAccountManager.MAUI.Services.EncryptionService;
+using RiotAccountManager.MAUI.Services.LcuService;
+using RiotAccountManager.MAUI.Services.RiotClientService;
 
 namespace RiotAccountManager.MAUI;
 
@@ -22,10 +25,14 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-
-        builder.Services.AddSingleton<EncryptionService>();
         builder.Services.AddSingleton<AccountRepository>();
-        builder.Services.AddScoped<RiotClientService>();
+
+        builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
+        builder.Services.AddScoped<IRiotClientService, RiotClientService>();
+        builder.Services.AddScoped<IRiotClientProcessService, RiotClientProcessService>();
+        builder.Services.AddScoped<IRiotClientLockfileService, RiotClientLockfileService>();
+        builder.Services.AddScoped<IRiotClientUIAutomationService, RiotClientUIAutomationService>();
+        builder.Services.AddScoped<ILcuService, LcuService>();
 
         return builder.Build();
     }

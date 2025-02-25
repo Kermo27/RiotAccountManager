@@ -2,9 +2,9 @@
 using System.Text;
 using Microsoft.Win32;
 
-namespace RiotAccountManager.MAUI.Services;
+namespace RiotAccountManager.MAUI.Services.EncryptionService;
 
-public class EncryptionService : IDisposable
+public class EncryptionService : IEncryptionService, IDisposable
 {
     private readonly byte[] _entropy;
     private bool _disposed;

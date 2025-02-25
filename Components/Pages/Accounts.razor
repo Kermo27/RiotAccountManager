@@ -1,10 +1,10 @@
 ﻿@page "/accounts"
 @using RiotAccountManager.MAUI.Data.Models
 @using RiotAccountManager.MAUI.Data.Repositories
-@using RiotAccountManager.MAUI.Services
+@using RiotAccountManager.MAUI.Services.EncryptionService
+@using RiotAccountManager.MAUI.Services.RiotClientService
 @inject AccountRepository Repository
-@inject RiotClientService RiotClient
-@inject EncryptionService Encryptor
+@inject IEncryptionService Encryptor
 
 <h3>Accounts manager</h3>
 
@@ -39,7 +39,6 @@
             <td>@acc.Username</td>
             <td>@acc.Nickname</td>
             <td>
-                <button @onclick="@(() => Login(acc))" class="btn btn-success">Login</button>
                 <button class="btn btn-primary">Edit</button>
                 <button @onclick="@(() => Remove(acc))" class="btn btn-danger">Remove</button>
             </td>
@@ -79,11 +78,6 @@
         {
             Console.WriteLine($"Błąd dodawania konta: {ex.Message}");
         }
-    }
-
-    private async Task Login(Account account)
-    {
-        var success = await RiotClient.AutoLogin(account);
     }
 
     private void Remove(Account account)

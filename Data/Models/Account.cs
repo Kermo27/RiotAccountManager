@@ -1,4 +1,5 @@
 ﻿using RiotAccountManager.MAUI.Services;
+using RiotAccountManager.MAUI.Services.EncryptionService;
 
 namespace RiotAccountManager.MAUI.Data.Models;
 
@@ -9,7 +10,7 @@ public class Account
     public byte[] EncryptedPassword { get; set; }
     public string? Nickname { get; set; }
 
-    public string GetDecryptedPassword(EncryptionService encryptionService)
+    public string GetDecryptedPassword(IEncryptionService encryptionService)
     {
         if (EncryptedPassword == null || EncryptedPassword.Length == 0)
             return string.Empty;

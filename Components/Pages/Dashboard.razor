@@ -1,7 +1,44 @@
 ﻿@page "/"
+@using RiotAccountManager.MAUI.Data.Models
+@using RiotAccountManager.MAUI.Data.Repositories
+@using RiotAccountManager.MAUI.Services.RiotClientService
+@inject AccountRepository Repository
+@inject IRiotClientService RiotClient
 
 <h3>Dashboard</h3>
 
+<table class="table">
+    <thead>
+    <tr>
+        <th>Login</th>
+        <th>Nickname</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var acc in accounts)
+    {
+        <tr>
+            <td>@acc.Username</td>
+            <td>@acc.Nickname</td>
+            <td>
+                <button @onclick="@(() => Login(acc))" class="btn btn-success">Login</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
 @code {
+    private List<Account> accounts = new();
     
+    protected override void OnInitialized()
+    {
+        accounts = Repository.GetAll();
+    }
+    
+    private async Task Login(Account account)
+    {
+        await RiotClient.AutoLogin(account);
+    }
 }
