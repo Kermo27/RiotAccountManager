@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiotAccountManager.MAUI", "RiotAccountManager.MAUI.csproj", "{A4548FDF-F446-4740-BCD8-32E0840E6476}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4548FDF-F446-4740-BCD8-32E0840E6476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4548FDF-F446-4740-BCD8-32E0840E6476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4548FDF-F446-4740-BCD8-32E0840E6476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4548FDF-F446-4740-BCD8-32E0840E6476}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
