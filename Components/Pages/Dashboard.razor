@@ -149,4 +149,9 @@
     {
         await RiotClient.AutoLogin(account);
     }
+
+    private void ShowDetails(Account account)
+    {
+        NavigationManager.NavigateTo($"/accountdetails/{account.Username}");
+    }
 }
