@@ -1,6 +1,7 @@
 ﻿/*#if (SampleContent)*/
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #1a1a1a;
 }
 
 a, .btn-link {
@@ -84,5 +85,226 @@ h1:focus {
 
     .flex-column, .navbar-brand {
         padding-left: env(safe-area-inset-left);
+    }
+}
+
+.app-container{
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #1a1a1a;
+    border-radius: 8px;
+}
+
+.app-title {
+    color: #ff4654;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.account-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.account-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    transition: transform 0.2s;
+    color: #f7f7f7;
+}
+
+.account-item:hover {
+    transform: translateX(5px);
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.account-icon {
+    background: #ff4654;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.region-badge {
+    background: #3a3a3a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.account-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-modal {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    color: white;
+    border-radius: 4px;
+}
+
+/* Stylowanie placeholderów */
+.form-control::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Styl dla nieaktywnej opcji w select */
+select.form-control option[disabled][selected] {
+    color: #6c757d;
+    background-color: #2a2a2a;
+}
+
+/* Styl przy focusie */
+.form-control:focus::placeholder {
+    color: transparent;
+}
+
+.security-warning {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: #ff4654;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 300px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Base button styles */
+/* Base button styles */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px; /* Większe zaokrąglenie */
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 6px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+/* Icon styling */
+.btn-icon {
+    width: 18px; /* Mniejsze ikony */
+    height: 18px;
+    fill: currentColor;
+}
+
+/* Edit Button */
+.edit-btn {
+    background-color: #17a2b8;
+    color: white;
+    border-radius: 15px; /* Lekko mniejsze zaokrąglenie */
+}
+
+/* Login Button */
+.login-btn {
+    background-color: #ff4654;
+    color: white;
+    padding: 8px 16px; /* Nieco mniejsze niż poprzednio */
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Delete Button */
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 15px;
+}
+
+/* Hover effects */
+.action-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsywność */
+@media (max-width: 600px) {
+    .app-container {
+        padding: 10px;
+    }
+
+    .account-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .action-btn {
+        padding: 4px 8px;
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .btn-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .login-btn {
+        padding: 6px 12px;
     }
 }

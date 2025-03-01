@@ -1,42 +1,148 @@
 ﻿@page "/"
 @using RiotAccountManager.MAUI.Data.Models
 @using RiotAccountManager.MAUI.Data.Repositories
+@using RiotAccountManager.MAUI.Services.EncryptionService
 @using RiotAccountManager.MAUI.Services.RiotClientService
 @inject AccountRepository Repository
 @inject IRiotClientService RiotClient
-@inject NavigationManager NavigationManager
+@inject IEncryptionService Encryptor
 
-<h3>Dashboard</h3>
+<div class="app-container">
+    <!-- Nagłówek -->
+    <header class="app-header">
+        <h1 class="app-title">Riot Account Manager</h1>
+        <button class="icon-button" @onclick="OpenAddDialog">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+            </svg>
+            Add account
+        </button>
+    </header>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Login</th>
-        <th>Nickname</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var acc in accounts)
+    <!-- Lista kont -->
+    <div class="account-list">
+        @foreach (var account in _accounts)
+        {
+            <div class="account-item">
+                <div class="account-info">
+                    <div class="account-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="account-details">
+                        <h3>@account.Nickname</h3>
+                    </div>
+                </div>
+                <div class="account-actions">
+                    <button class="login-btn" @onclick="@(() => Login(account))">
+                         Login
+                    </button>
+                    <button class="edit-btn" @onclick="@(() => EditAccount(account.Id))">
+                        <svg class="button-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                        </svg> Edit
+                    </button>
+                    <button class="delete-btn" @onclick="@(() => DeleteAccount(account.Id))">
+                        <svg class="button-icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Modal do dodawania konta -->
+    @if (_showAddDialog)
     {
-        <tr>
-            <td>@acc.Username</td>
-            <td>@acc.Nickname</td>
-            <td>
-                <button @onclick="@(() => Login(acc))" class="btn btn-success">Login</button>
-                <button @onclick="@(() => ShowDetails(acc))" class="btn btn-info">Details</button>
-            </td>
-        </tr>
+        <div class="modal-backdrop">
+            <div class="account-modal">
+                <h2>Dodaj nowe konto</h2>
+                <div class="form-group">
+                    <label>Account name:</label>
+                    <InputText @bind-Value="_newAccount.Nickname" class="form-control" placeholder="Nick#Tag"/>
+                </div>
+                <div class="form-group">
+                    <label>Login:</label>
+                    <InputText @bind-Value="_newAccount.Username" class="form-control" placeholder="OperaChuj" />
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <InputText type="password" @bind-Value="password" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Region:</label>
+                    <select @bind="_newAccount.Region" class="form-control" aria-label="Choose region">
+                        <option value="" disabled selected hidden>Choose region...</option>
+                        @foreach (var region in regions)
+                        {
+                            <option value="@region">@region</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-footer">
+                    <button @onclick="SaveAccount" class="primary-btn">Save</button>
+                    <button @onclick="CloseAddDialog" class="cancel-btn">Close</button>
+                </div>
+            </div>
+        </div>
     }
-    </tbody>
-</table>
+
+    <!-- Komunikat bezpieczeństwa -->
+    <div class="security-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Automatic login may violate Riot Games rules and regulations. Use at your own risk.</span>
+    </div>
+</div>
 
 @code {
-    private List<Account> accounts = new();
+    private List<Account> _accounts = new();
+    private Account _newAccount = new();
+    private bool _showAddDialog;
+    private List<string> regions = new() { "EUW", "NA", "EUNE", "BR", "TR", "RU", "OCE", "LAN", "LAS", "JP", "KR" };
+    private string password;
     
     protected override void OnInitialized()
     {
-        accounts = Repository.GetAll();
+        _accounts = Repository.GetAll();
+    }
+
+    private void OpenAddDialog()
+    {
+        _newAccount = new Account();
+        _showAddDialog = true;
+    }
+
+    private void CloseAddDialog()
+    {
+        _showAddDialog = false;
+    }
+
+    private async Task SaveAccount()
+    {
+        if (string.IsNullOrWhiteSpace(password)) return;
+        
+        _newAccount.EncryptedPassword = Encryptor.Encrypt(password);
+        _accounts.Add(_newAccount);
+        Repository.SaveAll(_accounts);
+        
+        CloseAddDialog();
+    }
+    
+    private async Task EditAccount(string id)
+    {
+        var account = _accounts.FirstOrDefault(a => a.Id == id);
+        if (account != null)
+        {
+            _newAccount = account;
+            _showAddDialog = true;
+        }
+    }
+    
+    private async Task DeleteAccount(string id)
+    {
+        _accounts.RemoveAll(a => a.Id == id);
+        Repository.SaveAll(_accounts);
     }
     
     private async Task Login(Account account)
