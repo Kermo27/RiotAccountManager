@@ -9,6 +9,7 @@ public class Account
     public string Username { get; set; } = string.Empty;
     public byte[] EncryptedPassword { get; set; }
     public string? Nickname { get; set; }
+    public string Region { get; set; }
 
     public string GetDecryptedPassword(IEncryptionService encryptionService)
     {

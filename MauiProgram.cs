@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Data.Repositories;
-using RiotAccountManager.MAUI.Services;
 using RiotAccountManager.MAUI.Services.EncryptionService;
 using RiotAccountManager.MAUI.Services.LcuService;
 using RiotAccountManager.MAUI.Services.RiotClientService;
