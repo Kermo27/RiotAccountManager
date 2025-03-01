@@ -4,63 +4,155 @@
 @using RiotAccountManager.MAUI.Services.LcuService
 @inject AccountRepository AccountRepository
 @inject ILcuService LcuService
+@inject NavigationManager NavigationManager
 
-<h3>Account Details</h3>
+<div class="app-container">
+    <!-- Nagłówek -->
+    <header class="app-header">
+        <button class="icon-button" @onclick="ReturnToMain">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+            </svg>
+        </button>
+        <h1 class="app-title">Account Details</h1>
+        <div style="width: 40px;"></div>
+    </header>
 
-@if (_account != null)
-{
-    <p><strong>Login:</strong> @_account.Username</p>
-    <p><strong>Nickname:</strong> @_account.Nickname</p>
-    @if (_region != null)
+    @if (_account != null)
     {
-        <p><strong>Region:</strong> @_region.Region</p>
-    }
+        <div class="account-details">
+            <div class="account-info-section">
+                <div class="detail-item">
+                    <span class="detail-label">Login:</span>
+                    <span class="detail-value">@_account.Username</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Nickname:</span>
+                    <span class="detail-value">@_account.Nickname</span>
+                </div>
+                @if (_region != null)
+                {
+                    <div class="detail-item">
+                        <span class="detail-label">Region:</span>
+                        <span class="detail-value region-badge">@_region.Region</span>
+                    </div>
+                }
+            </div>
 
-    @if (!_isClientRunning)
-    {
-        <p class="text-danger">League of Legends client is not running.</p>
-    }
+            @if (!_isClientRunning)
+            {
+                <div class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>League of Legends client is not running</span>
+                </div>
+            }
 
-    <button class="btn btn-primary" @onclick="FetchRankedData">
-        Fetch Data
-    </button>
+            <button class="primary-btn fetch-btn" @onclick="FetchRankedData">
+                <i class="fas fa-sync-alt"></i>
+                Refresh Data
+            </button>
 
-    @if (_rankedEntry != null)
-    {
-        <hr />
-        <h4>Ranked Solo/Duo:</h4>
-        <p><strong>Queue Type:</strong> @_rankedEntry.QueueType</p>
-        <p><strong>Tier:</strong> @_rankedEntry.Tier</p>
-        <p><strong>Division:</strong> @_rankedEntry.Division</p>
-        <p><strong>League Points:</strong> @_rankedEntry.LeaguePoints</p>
-        <p><strong>Wins:</strong> @_rankedEntry.Wins</p>
-        <p><strong>Losses:</strong> @_rankedEntry.Losses</p>
-        <p><strong>Win Ratio:</strong> @_rankedEntry.WinRatio</p>
+            @if (_rankedEntry != null)
+            {
+                <div class="ranked-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-trophy"></i>
+                        Ranked Solo/Duo
+                    </h3>
+                    <div class="ranked-grid">
+                        <div class="ranked-item">
+                            <span>Tier</span>
+                            <strong>@_rankedEntry.Tier</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Division</span>
+                            <strong>@_rankedEntry.Division</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>LP</span>
+                            <strong>@_rankedEntry.LeaguePoints</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Wins</span>
+                            <strong>@_rankedEntry.Wins</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Losses</span>
+                            <strong>@_rankedEntry.Losses</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Win Ratio</span>
+                            <strong>@_rankedEntry.WinRatio%</strong>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (_flexEntry != null)
+            {
+                <div class="ranked-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-users"></i>
+                        Ranked Flex
+                    </h3>
+                    <div class="ranked-grid">
+                        <div class="ranked-item">
+                            <span>Tier</span>
+                            <strong>@_flexEntry.Tier</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Division</span>
+                            <strong>@_flexEntry.Division</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>LP</span>
+                            <strong>@_flexEntry.LeaguePoints</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Wins</span>
+                            <strong>@_flexEntry.Wins</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Losses</span>
+                            <strong>@_flexEntry.Losses</strong>
+                        </div>
+                        <div class="ranked-item">
+                            <span>Win Ratio</span>
+                            <strong>@_flexEntry.WinRatio%</strong>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (_wallet != null)
+            {
+                <div class="wallet-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-wallet"></i>
+                        Wallet
+                    </h3>
+                    <div class="wallet-grid">
+                        <div class="wallet-item be">
+                            <span>Blue Essence</span>
+                            <strong>@_wallet.LolBlueEssence</strong>
+                        </div>
+                        <div class="wallet-item rp">
+                            <span>Riot Points</span>
+                            <strong>@_wallet.Rp</strong>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     }
-    
-    @if (_flexEntry != null)
+    else
     {
-        <hr />
-        <h4>Ranked Flex:</h4>
-        <p><strong>Queue Type:</strong> @_flexEntry.QueueType</p>
-        <p><strong>Tier:</strong> @_flexEntry.Tier</p>
-        <p><strong>Division:</strong> @_flexEntry.Division</p>
-        <p><strong>League Points:</strong> @_flexEntry.LeaguePoints</p>
-        <p><strong>Wins:</strong> @_flexEntry.Wins</p>
-        <p><strong>Losses:</strong> @_flexEntry.Losses</p>
-        <p><strong>Win Ratio:</strong> @_flexEntry.WinRatio</p>
+        <div class="not-found">
+            <i class="fas fa-user-slash"></i>
+            <p>Account not found</p>
+        </div>
     }
-    
-    @if (_wallet != null)
-    {
-        <p><strong>BE:</strong> @_wallet.LolBlueEssence</p>
-        <p><strong>RP:</strong> @_wallet.Rp</p>
-    }
-}
-else
-{
-    <p>Account not found.</p>
-}
+</div>
 
 @code {
     [Parameter]
@@ -140,5 +232,10 @@ else
     private async Task FetchRegionLocale()
     {
         _region = await LcuService.GetAsync<RegionDto>("/riotclient/region-locale");
+    }
+    
+    private void ReturnToMain()
+    {
+        NavigationManager.NavigateTo("/");
     }
 }

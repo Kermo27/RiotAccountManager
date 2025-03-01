@@ -6,6 +6,7 @@
 @inject AccountRepository Repository
 @inject IRiotClientService RiotClient
 @inject IEncryptionService Encryptor
+@inject NavigationManager NavigationManager
 
 <div class="app-container">
     <!-- Nagłówek -->
@@ -28,7 +29,7 @@
                     <div class="account-icon">
                         <i class="fas fa-user"></i>
                     </div>
-                    <div class="account-details">
+                    <div class="account-details" @onclick="@(() => NavigateToDetails(account.Username))">
                         <h3>@account.Nickname</h3>
                     </div>
                 </div>
@@ -68,13 +69,13 @@
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
-                    <InputText type="password" @bind-Value="password" class="form-control" />
+                    <InputText type="password" @bind-Value="_password" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label>Region:</label>
                     <select @bind="_newAccount.Region" class="form-control" aria-label="Choose region">
                         <option value="" disabled selected hidden>Choose region...</option>
-                        @foreach (var region in regions)
+                        @foreach (var region in _regions)
                         {
                             <option value="@region">@region</option>
                         }
@@ -88,6 +89,15 @@
         </div>
     }
 
+    <div class="coffee-container">
+        <button class="action-btn coffee-btn" @onclick="OpenBuyMeACoffee">
+            <svg class="btn-icon" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,5C11.26,5 10.61,5.4 10.28,6C9.5,6.07 8.82,6.5 8.5,7.07L7.05,7.05C7.18,6.09 7.78,5.26 8.68,4.83C9.5,4.45 10.5,4.5 11.28,4.93C11.62,4.4 12.23,4 13,4C13.74,4 14.39,4.4 14.72,5C15.5,5.07 16.18,5.5 16.5,6.07L17.95,6.05C17.82,5.09 17.22,4.26 16.32,3.83C15.5,3.45 14.5,3.5 13.72,3.93C13.38,3.4 12.77,3 12,3M11,14V16H13V14H11M15,14V16H17V14H15M7,14V16H9V14H7M15.1,11L16.25,10.84C16.67,10.81 17.04,11.18 17.04,11.6C17.04,12.03 16.67,12.4 16.25,12.4H15.2C15.12,12.4 15.05,12.44 15.05,12.5V13.6H17.1V15H14.95C14.53,15 14.16,14.63 14.16,14.2V12.4C14.16,11.5 14.86,10.8 15.76,10.8H16.91C16.96,10.66 17,10.5 17,10.31C17,9.77 16.53,9.31 16,9.31H14.5C13.95,9.31 13.5,9.76 13.5,10.31V11.8H12.5V10.31C12.5,9.76 12.05,9.31 11.5,9.31H10C9.45,9.31 9,9.76 9,10.31V11.8H7V10.31C7,9.76 6.55,9.31 6,9.31H4.5C3.95,9.31 3.5,9.77 3.5,10.31C3.5,10.86 3.95,11.31 4.5,11.31H6V14.2C6,14.63 6.37,15 6.8,15H9V13.6H7.9V12.4H9.8C10.23,12.4 10.6,12.03 10.6,11.6C10.6,11.18 10.23,10.81 9.8,10.81H8.75C8.32,10.81 7.96,11.18 7.96,11.6V14.2C7.96,14.63 7.59,15 7.16,15H6.25C5.82,15 5.45,14.63 5.45,14.2V11.6C5.45,10.7 6.15,10 7.05,10H8.19C8.18,9.86 8.17,9.71 8.17,9.57C8.17,8.2 9.38,7 10.83,7H13.17C14.62,7 15.83,8.2 15.83,9.57C15.83,9.71 15.82,9.86 15.8,10H16.95C17.85,10 18.55,10.7 18.55,11.6V14.2C18.55,14.63 18.18,15 17.75,15H16.84C16.41,15 16.04,14.63 16.04,14.2V11.6C16.04,11.18 15.68,10.81 15.25,10.81H14.2C14.12,10.81 14.05,10.77 14.05,10.7V9.6H11.5V11.8H12.5V9.6H15.1V11Z"/>
+            </svg>
+            <span>Buy me a coffee</span>
+        </button>
+    </div>
+
     <!-- Komunikat bezpieczeństwa -->
     <div class="security-warning">
         <i class="fas fa-exclamation-triangle"></i>
@@ -99,8 +109,8 @@
     private List<Account> _accounts = new();
     private Account _newAccount = new();
     private bool _showAddDialog;
-    private List<string> regions = new() { "EUW", "NA", "EUNE", "BR", "TR", "RU", "OCE", "LAN", "LAS", "JP", "KR" };
-    private string password;
+    private List<string> _regions = new() { "EUW", "NA", "EUNE", "BR", "TR", "RU", "OCE", "LAN", "LAS", "JP", "KR" };
+    private string _password = null!;
     
     protected override void OnInitialized()
     {
@@ -120,9 +130,9 @@
 
     private async Task SaveAccount()
     {
-        if (string.IsNullOrWhiteSpace(password)) return;
+        if (string.IsNullOrWhiteSpace(_password)) return;
         
-        _newAccount.EncryptedPassword = Encryptor.Encrypt(password);
+        _newAccount.EncryptedPassword = Encryptor.Encrypt(_password);
         _accounts.Add(_newAccount);
         Repository.SaveAll(_accounts);
         
@@ -150,8 +160,21 @@
         await RiotClient.AutoLogin(account);
     }
 
-    private void ShowDetails(Account account)
+    private static async Task OpenBuyMeACoffee()
     {
-        NavigationManager.NavigateTo($"/accountdetails/{account.Username}");
+        const string url = "https://buymeacoffee.com/kermo";
+        try
+        {
+            await Launcher.Default.OpenAsync(new Uri(url));
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+    
+    private void NavigateToDetails(string username)
+    {
+        NavigationManager.NavigateTo($"/accountDetails/{username}");
     }
 }
