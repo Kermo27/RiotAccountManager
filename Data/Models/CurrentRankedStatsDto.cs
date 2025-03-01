@@ -10,4 +10,5 @@ public class CurrentRankedStatsDto
     public RankedEntryDto HighestRankedEntry { get; set; }
     public RankedEntryDto HighestRankedEntrySR { get; set; }
     public int PreviousSeasonSplitPoints { get; set; }
+    public Dictionary<string, RankedEntryDto> QueueMap { get; set; }
 }
