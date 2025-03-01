@@ -1,59 +1,88 @@
-﻿@page "/accountDetails/{Username}"
+﻿@page "/accountDetails/{username}"
 @using RiotAccountManager.MAUI.Data.Models
 @using RiotAccountManager.MAUI.Data.Repositories
 @using RiotAccountManager.MAUI.Services.LcuService
-@inject AccountRepository Repository
+@inject AccountRepository AccountRepository
 @inject ILcuService LcuService
 
-@if (account != null)
+<h3>Account Details</h3>
+
+@if (_account != null)
 {
-    <p><strong>Login:</strong> @account.Username</p>
-    <p><strong>Nickname:</strong> @account.Nickname</p>
-    
-    @if (!isClientRunning)
+    <p><strong>Login:</strong> @_account.Username</p>
+    <p><strong>Nickname:</strong> @_account.Nickname</p>
+    @if (_region != null)
     {
-        <p class="text-danger">League of Legends klient nie jest uruchomiony.</p>
+        <p><strong>Region:</strong> @_region.Region</p>
+    }
+
+    @if (!_isClientRunning)
+    {
+        <p class="text-danger">League of Legends client is not running.</p>
     }
 
     <button class="btn btn-primary" @onclick="FetchRankedData">
-        Pobierz dane Ranked
+        Fetch Data
     </button>
 
-    @if (rankedEntry != null)
+    @if (_rankedEntry != null)
     {
         <hr />
-        <h4>Dane Ranked:</h4>
-        <p><strong>Queue Type:</strong> @rankedEntry.QueueType</p>
-        <p><strong>Tier:</strong> @rankedEntry.Tier</p>
-        <p><strong>Division:</strong> @rankedEntry.Division</p>
-        <p><strong>League Points:</strong> @rankedEntry.LeaguePoints</p>
-        <p><strong>Wins:</strong> @rankedEntry.Wins</p>
-        <p><strong>Losses:</strong> @rankedEntry.Losses</p>
+        <h4>Ranked Solo/Duo:</h4>
+        <p><strong>Queue Type:</strong> @_rankedEntry.QueueType</p>
+        <p><strong>Tier:</strong> @_rankedEntry.Tier</p>
+        <p><strong>Division:</strong> @_rankedEntry.Division</p>
+        <p><strong>League Points:</strong> @_rankedEntry.LeaguePoints</p>
+        <p><strong>Wins:</strong> @_rankedEntry.Wins</p>
+        <p><strong>Losses:</strong> @_rankedEntry.Losses</p>
+        <p><strong>Win Ratio:</strong> @_rankedEntry.WinRatio</p>
+    }
+    
+    @if (_flexEntry != null)
+    {
+        <hr />
+        <h4>Ranked Flex:</h4>
+        <p><strong>Queue Type:</strong> @_flexEntry.QueueType</p>
+        <p><strong>Tier:</strong> @_flexEntry.Tier</p>
+        <p><strong>Division:</strong> @_flexEntry.Division</p>
+        <p><strong>League Points:</strong> @_flexEntry.LeaguePoints</p>
+        <p><strong>Wins:</strong> @_flexEntry.Wins</p>
+        <p><strong>Losses:</strong> @_flexEntry.Losses</p>
+        <p><strong>Win Ratio:</strong> @_flexEntry.WinRatio</p>
+    }
+    
+    @if (_wallet != null)
+    {
+        <p><strong>BE:</strong> @_wallet.LolBlueEssence</p>
+        <p><strong>RP:</strong> @_wallet.Rp</p>
     }
 }
 else
 {
-    <p>Nie znaleziono konta.</p>
+    <p>Account not found.</p>
 }
 
 @code {
     [Parameter]
-    public string Username { get; set; }
+    public string? Username { get; set; }
 
-    private Account account;
-    private RankedEntryDto rankedEntry;
-    private bool isClientRunning = false;
-    private Timer refreshTimer;
+    private Account? _account;
+    private RankedEntryDto? _rankedEntry;
+    private RankedEntryDto? _flexEntry;
+    private WalletDto? _wallet;
+    private RegionDto? _region;
+    private bool _isClientRunning = false;
+    private Timer _refreshTimer;
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        account = Repository.GetAll().FirstOrDefault(a => a.Username == Username);
+        _account = AccountRepository.GetAll().FirstOrDefault(a => a.Username == Username);
 
         await CheckClientStatusAsync();
 
-        if (isClientRunning)
+        if (_isClientRunning)
         {
-            refreshTimer = new Timer(async _ =>
+            _refreshTimer = new Timer(async _ =>
             {
                 await InvokeAsync(async () =>
                 {
@@ -63,14 +92,15 @@ else
             }, null, 0, 10000);
         }
     }
-    
+
     private async Task CheckClientStatusAsync()
     {
         var stats = await LcuService.GetAsync<CurrentRankedStatsDto>("/lol-ranked/v1/current-ranked-stats");
-        isClientRunning = stats != null;
-        if (isClientRunning)
+        _isClientRunning = stats != null;
+
+        if (_isClientRunning)
         {
-            rankedEntry = stats.HighestRankedEntry;
+            _rankedEntry = stats?.HighestRankedEntry;
         }
     }
 
@@ -79,13 +109,36 @@ else
         var stats = await LcuService.GetAsync<CurrentRankedStatsDto>("/lol-ranked/v1/current-ranked-stats");
         if (stats != null)
         {
-            isClientRunning = true;
-            rankedEntry = stats.HighestRankedEntry;
+            _isClientRunning = true;
+            _rankedEntry = stats.HighestRankedEntry;
+
+            if (stats.QueueMap != null && stats.QueueMap.ContainsKey("RANKED_FLEX_SR"))
+            {
+                _flexEntry = stats.QueueMap["RANKED_FLEX_SR"];
+            }
+            else
+            {
+                _flexEntry = null;
+            }
         }
         else
         {
-            isClientRunning = false;
-            rankedEntry = null;
+            _isClientRunning = false;
+            _rankedEntry = null;
+            _flexEntry = null;
         }
+
+        FetchWalletData();
+        FetchRegionLocale();
+    }
+
+    private async Task FetchWalletData()
+    {
+        _wallet = await LcuService.GetAsync<WalletDto>("/lol-inventory/v1/wallet?currencyTypes=[\"RP\",\"lol_blue_essence\"]");
+    }
+
+    private async Task FetchRegionLocale()
+    {
+        _region = await LcuService.GetAsync<RegionDto>("/riotclient/region-locale");
     }
 }

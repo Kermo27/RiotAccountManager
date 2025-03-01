@@ -21,4 +21,5 @@ public class RankedEntryDto
     public string Tier { get; set; }
     public object Warnings { get; set; }
     public int Wins { get; set; }
+    public string WinRatio => $"{Math.Round((float)Wins / (Wins + Losses) * 100)}%";
 }
