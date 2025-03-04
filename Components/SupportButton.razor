@@ -1,0 +1,11 @@
+﻿<div class="coffee-container">
+    <button class="action-btn coffee-btn" @onclick="OnClick" title="Support development">
+        <i class="fa-solid fa-mug-saucer"></i>
+        <span class="btn-text">Buy me a coffee</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

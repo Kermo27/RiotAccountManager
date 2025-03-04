@@ -1,0 +1,10 @@
+﻿<div class="security-warning">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>@WarningText</span>
+</div>
+
+@code {
+    [Parameter]
+    public string WarningText { get; set; } = 
+        "Automatic login may violate Riot Games rules and regulations. Use at your own risk.";
+}

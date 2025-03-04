@@ -25,4 +25,9 @@ public class Account
             return "DECRYPTION_ERROR";
         }
     }
+
+    public bool IsExistingAccount()
+    {
+        return !string.IsNullOrEmpty(this.Id);
+    }
 }

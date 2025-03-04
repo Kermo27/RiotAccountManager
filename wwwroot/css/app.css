@@ -178,6 +178,7 @@ h1:focus {
 
 .account-modal {
     background: #1a1a1a;
+    color: #f7f7f7;
     padding: 20px;
     border-radius: 8px;
     width: 90%;
@@ -231,6 +232,11 @@ select.form-control option[disabled][selected] {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.coffee-btn i {
+    font-size: 1.2rem;
+    margin-right: 8px;
+}
+
 .coffee-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.2);
@@ -277,15 +283,16 @@ select.form-control option[disabled][selected] {
 
 /* Icon styling */
 .btn-icon {
-    width: 18px; /* Mniejsze ikony */
-    height: 18px;
-    fill: currentColor;
+    font-size: 1.2rem; /* Control icon size */
+    margin: 0; /* Remove default margins */
 }
 
 /* Edit Button */
 .edit-btn {
     background-color: #17a2b8;
     color: white;
+    padding: 8px;
+    min-width: 40px;
     border-radius: 15px; /* Lekko mniejsze zaokrąglenie */
 }
 
@@ -293,15 +300,17 @@ select.form-control option[disabled][selected] {
 .login-btn {
     background-color: #ff4654;
     color: white;
-    padding: 8px 16px; /* Nieco mniejsze niż poprzednio */
+    padding: 8px;
+    min-width: 40px;
     border-radius: 20px;
-    text-transform: uppercase;
     letter-spacing: 0.3px;
 }
 
 /* Delete Button */
 .delete-btn {
     background-color: #dc3545;
+    padding: 8px;
+    min-width: 40px;
     color: white;
     border-radius: 15px;
 }
@@ -338,24 +347,19 @@ select.form-control option[disabled][selected] {
         padding: 6px 12px;
     }
 
-    .coffee-container {
-        bottom: 10px;
-        right: 10px;
-    }
-
-    .coffee-btn span {
+    .coffee-btn .btn-text {
         display: none;
     }
 
-    .coffee-btn {
-        padding: 8px;
-        border-radius: 50%;
+    .coffee-btn i {
+        margin-right: 0;
+        font-size: 1.4rem;
     }
 }
 
 .account-details {
     padding: 20px;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -459,4 +463,62 @@ select.form-control option[disabled][selected] {
     text-align: center;
     padding: 40px;
     color: #ff4654;
+}
+
+/* Dodaj style dla modala potwierdzenia */
+.confirmation-modal {
+    background: #2a2a2a;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 400px;
+    text-align: center;
+}
+
+.confirmation-modal h3 {
+    color: #ff4654;
+    margin-top: 0;
+}
+
+.confirmation-modal p {
+    margin: 15px 0;
+    color: #ddd;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    background: #dc3545;
+    color: white;
+    padding: 8px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.confirm-btn:hover {
+    background: #c82333;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: white;
+    padding: 8px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #5a6268;
+}
+
+.error-message {
+    color: #c82333;
 }

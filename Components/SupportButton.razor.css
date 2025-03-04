@@ -1,0 +1,39 @@
+﻿.coffee-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.coffee-btn {
+    background: #FF813F;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.coffee-btn:hover {
+    background: #FF6F1F;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.btn-text {
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .coffee-btn {
+        padding: 10px;
+        border-radius: 50%;
+    }
+
+    .btn-text {
+        display: none;
+    }
+}
