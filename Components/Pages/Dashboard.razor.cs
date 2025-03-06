@@ -30,7 +30,6 @@ public partial class DashboardBase : ComponentBase
     private string _accountToDeleteId = string.Empty;
 
     protected string ErrorMessage { get; set; } = string.Empty;
-    protected string Password { get; set; }
 
     protected readonly List<string> Regions = new()
     {
@@ -58,9 +57,9 @@ public partial class DashboardBase : ComponentBase
             Id = string.Empty,
             Nickname = string.Empty,
             Username = string.Empty,
+            Password = string.Empty,
             Region = "EUW",
         };
-        Password = string.Empty;
         ErrorMessage = string.Empty;
         ShowAddDialog = true;
     }
@@ -85,7 +84,6 @@ public partial class DashboardBase : ComponentBase
                 Region = account.Region,
                 EncryptedPassword = account.EncryptedPassword,
             };
-            Password = string.Empty;
             ErrorMessage = string.Empty;
             ShowEditDialog = true;
         }
@@ -115,15 +113,15 @@ public partial class DashboardBase : ComponentBase
                 return;
             }
 
-            Console.WriteLine($"Saved password: {Password}");
-            if (string.IsNullOrWhiteSpace(Password))
+            Console.WriteLine($"Saved password: {NewAccount.Password}");
+            if (string.IsNullOrWhiteSpace(NewAccount.Password))
             {
                 ErrorMessage = "Password is required for new accounts!";
                 return;
             }
 
             NewAccount.Id = Guid.NewGuid().ToString();
-            NewAccount.EncryptedPassword = Encryptor.Encrypt(Password);
+            NewAccount.EncryptedPassword = Encryptor.Encrypt(NewAccount.Password);
             Accounts.Add(NewAccount);
 
             Repository.SaveAll(Accounts);
@@ -160,9 +158,9 @@ public partial class DashboardBase : ComponentBase
                 account.Username = EditAccountModel.Username;
                 account.Region = EditAccountModel.Region;
 
-                if (!string.IsNullOrWhiteSpace(Password))
+                if (!string.IsNullOrWhiteSpace(EditAccountModel.Password))
                 {
-                    account.EncryptedPassword = Encryptor.Encrypt(Password);
+                    account.EncryptedPassword = Encryptor.Encrypt(EditAccountModel.Password);
                 }
 
                 Repository.SaveAll(Accounts);
