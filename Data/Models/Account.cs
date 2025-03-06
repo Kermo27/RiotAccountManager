@@ -1,4 +1,4 @@
-﻿using RiotAccountManager.MAUI.Services;
+﻿using Newtonsoft.Json;
 using RiotAccountManager.MAUI.Services.EncryptionService;
 
 namespace RiotAccountManager.MAUI.Data.Models;
@@ -8,6 +8,9 @@ public class Account
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Username { get; set; } = string.Empty;
     public byte[] EncryptedPassword { get; set; }
+
+    [JsonIgnore]
+    public string Password { get; set; }
     public string? Nickname { get; set; }
     public string Region { get; set; }
 
