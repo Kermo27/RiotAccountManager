@@ -1,0 +1,81 @@
+﻿@page "/settings"
+@inject NavigationManager Navigation
+
+<h3>Settings</h3>
+
+<div class="settings-container">
+    <div class="settings-card">
+        <h3 class="settings-title">
+            <i class="fa-solid fa-key settings-icon"></i>
+            Riot Games API Settings
+        </h3>
+
+        <div class="form-group password-container">
+            <div class="input-wrapper">
+                <input type="@(_showApiKey ? "text" : "password")"
+                       class="settings-input"
+                       @bind="_apiKey"
+                       placeholder="Enter your API key...">
+                <button class="toggle-password" @onclick="ToggleApiKeyVisibility">
+                    <i class="fa-solid @(_showApiKey ? "fa-eye-slash" : "fa-eye")"></i>
+                </button>
+            </div>
+        </div>
+
+            <button class="settings-button" @onclick="SaveApiKey">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Key
+            </button>
+
+            @if (!string.IsNullOrEmpty(_statusMessage))
+            {
+                <div class="settings-status @_alertClass">
+                    <i class="fa-solid @StatusIcon"></i>
+                    @_statusMessage
+                </div>
+            }
+    </div>
+
+    <button class="settings-back-button action-btn" @onclick="ReturnToDashboard">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Dashboard
+    </button>
+</div>
+
+@code {
+    private string _apiKey = string.Empty;
+    private string _statusMessage = string.Empty;
+    private string _alertClass = "alert-success";
+    private string StatusIcon => _alertClass == "success" ? "fa-circle-check" : "fa-triangle-exclamation";
+    private bool _showApiKey;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _apiKey = Preferences.Get("riot_api_key", string.Empty);
+    }
+    
+    private void SaveApiKey()
+    {
+        try
+        {
+            Preferences.Set("riot_api_key", _apiKey);
+            _statusMessage = "Key saved successfully!";
+            _alertClass = "alert-success";
+        }
+        catch
+        {
+            _statusMessage = "Błąd podczas zapisywania klucza!";
+            _alertClass = "alert-danger";
+        }
+    }
+
+    private void ReturnToDashboard()
+    {
+        Navigation.NavigateTo("/");
+    }
+    
+    private void ToggleApiKeyVisibility()
+    {
+        _showApiKey = !_showApiKey;
+    }
+}

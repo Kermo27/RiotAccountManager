@@ -190,7 +190,12 @@ public partial class DashboardBase : ComponentBase
 
     protected void CancelDelete() => ShowDeleteConfirmation = false;
 
-    protected async Task Login(Account account) => await RiotClient.AutoLogin(account);
+    protected async Task Login(Account account)
+    {
+        NavigateToDetails(account.Username);
+
+        await RiotClient.AutoLogin(account);
+    }
 
     protected static async Task OpenBuyMeACoffee()
     {

@@ -1,13 +1,53 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject NavigationManager Navigation
 
-<div class="page">
-    <!--<div class="sidebar">
-        <NavMenu/>
-    </div>-->
-
+<div class="page main-layout">
     <main>
-        <article class="content px-4">
+        @if (!isSettingsPage)
+        {
+            <div class="settings-button-container">
+                <button class="settings-trigger" @onclick="NavigateToSettings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        }
+
+        <article class="content px-4 app-container">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+    private bool isSettingsPage;
+    
+    protected override void OnInitialized()
+    {
+        UpdatePageState();
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdatePageState();
+        StateHasChanged();
+    }
+
+    private void UpdatePageState()
+    {
+        var currentUrl = Navigation.Uri;
+        isSettingsPage = currentUrl.Contains("/settings", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void NavigateToSettings()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+        GC.SuppressFinalize(this);
+    }
+}

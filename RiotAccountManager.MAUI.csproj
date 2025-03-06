@@ -90,7 +90,6 @@
 
     <ItemGroup>
       <Content Remove="Resources\Raw\appsettings.json" />
-      <EmbeddedResource Include="Resources\Raw\appsettings.json" />
     </ItemGroup>
 
 </Project>

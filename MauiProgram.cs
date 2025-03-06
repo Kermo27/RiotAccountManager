@@ -27,25 +27,6 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-        var assembly = Assembly.GetExecutingAssembly();
-        using var stream =
-            assembly.GetManifestResourceStream(
-                "RiotAccountManager.MAUI.Resources.Raw.appsettings.json"
-            ) ?? throw new FileNotFoundException("Can't find appsettings.json.");
-
-        var config = new ConfigurationBuilder()
-            .AddJsonStream(stream)
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true)
-            .Build();
-
-        builder.Configuration.AddConfiguration(config);
-
-        // Rejestracja serwisów Riot Games API
-        builder.Services.AddRiotGamesApi(options =>
-        {
-            options.ApiKey = config["RiotAPI:ApiKey"];
-        });
-
         builder.Services.AddSingleton<AccountRepository>();
 
         builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
