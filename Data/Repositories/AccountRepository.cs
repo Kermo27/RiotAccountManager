@@ -8,7 +8,7 @@ public class AccountRepository
 {
     private readonly string _filePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "LeagueAccountManager",
+        "RiotAccountManager",
         "accounts.json"
     );
 
@@ -23,7 +23,10 @@ public class AccountRepository
     private void EnsureDirectoryExists()
     {
         var dir = Path.GetDirectoryName(_filePath);
-        Directory.CreateDirectory(dir);
+        if (dir != null)
+        {
+            Directory.CreateDirectory(dir);
+        }
     }
 
     public List<Account> GetAll()
@@ -31,9 +34,25 @@ public class AccountRepository
         if (!File.Exists(_filePath))
             return new List<Account>();
 
-        var json = File.ReadAllText(_filePath);
+        try
+        {
+            var json = File.ReadAllText(_filePath);
 
-        return JsonConvert.DeserializeObject<List<Account>>(json);
+            if (string.IsNullOrWhiteSpace(json))
+                return new List<Account>();
+
+            var accounts = JsonConvert.DeserializeObject<List<Account>>(json);
+
+            if (accounts == null)
+                return new List<Account>();
+
+            return accounts;
+        }
+        catch (Exception ex) when (ex is JsonReaderException || ex is JsonSerializationException)
+        {
+            Console.WriteLine($"Error loading accounts: {ex.Message}");
+            return new List<Account>();
+        }
     }
 
     public void SaveAll(List<Account> accounts)

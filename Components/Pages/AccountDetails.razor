@@ -1,143 +1,113 @@
 ﻿@page "/accountDetails/{username}"
 @using RiotAccountManager.MAUI.Data.Models
 @using RiotAccountManager.MAUI.Data.Repositories
+@using RiotAccountManager.MAUI.Helpers
 @using RiotAccountManager.MAUI.Services.LcuService
 @inject AccountRepository AccountRepository
 @inject ILcuService LcuService
 @inject NavigationManager NavigationManager
 
+
 <div class="app-container">
     <header class="app-header">
         <button class="icon-button" @onclick="ReturnToMain">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
-            </svg>
+            <i class="fas fa-arrow-left"></i>
         </button>
-        <h1 class="app-title">Account Details</h1>
-        <div style="width: 40px;"></div>
+        <h1 class="app-title">@_account?.Nickname</h1>
     </header>
 
     @if (_account != null)
     {
-        <div class="account-details">
-            <div class="account-info-section">
-                <div class="detail-item">
-                    <span class="detail-label">Nickname:</span>
-                    <span class="detail-value">@_account.Nickname</span>
-                </div>
-                @if (_region != null)
+        <div class="account-layout">
+            <div class="rank-sidebar">
+                @if (_rankedEntry != null)
                 {
-                    <div class="detail-item">
-                        <span class="detail-label">Region:</span>
-                        <span class="detail-value region-badge">@_account.Region</span>
+                    <div class="rank-card">
+                        <div class="queue-type">RANKED SOLO/DUO</div>
+                        <div class="rank-main">
+                            <img src="@GetRankImagePath(_rankedEntry.Tier)" class="rank-icon" />
+                            <div class="rank-details">
+                                <div class="tier-info">
+                                    <span class="tier-name">@_rankedEntry.Tier.ToUpper()</span>
+                                    <span class="division">@_rankedEntry.Division</span>
+                                </div>
+                                <div class="lp">@_rankedEntry.LeaguePoints LP</div>
+                                <div class="wlr">
+                                    <span class="wins">@_rankedEntry.Wins W</span>
+                                    <span class="losses">@_rankedEntry.Losses L</span>
+                                    <span class="win-rate">(@_rankedEntry.WinRatio)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (_flexEntry != null)
+                {
+                    <div class="rank-card">
+                        <div class="queue-type">RANKED FLEX</div>
+                        <div class="rank-main">
+                            <img src="@GetRankImagePath(_flexEntry.Tier)" class="rank-icon" />
+                            <div class="rank-details">
+                                <div class="tier-info">
+                                    <span class="tier-name">@_flexEntry.Tier.ToUpper()</span>
+                                    <span class="division">@_flexEntry.Division</span>
+                                </div>
+                                <div class="lp">@_flexEntry.LeaguePoints LP</div>
+                                <div class="wlr">
+                                    <span class="wins">@_flexEntry.Wins W</span>
+                                    <span class="losses">@_flexEntry.Losses L</span>
+                                    <span class="win-rate">(@_flexEntry.WinRatio)</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 }
             </div>
+            
+            <div class="match-history">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i>
+                    Match History
+                </h2>
 
-            @if (!_isClientRunning)
-            {
-                <div class="warning-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>League of Legends client is not running</span>
+                <div class="match-list">
+                    @foreach (var match in _matches)
+                    {
+                        <div class="match-item @(match.IsWin ? "win" : "lose")">
+                            <div class="match-result-bar"></div>
+                            <div class="match-info">
+                                <div class="champion">
+                                    <img src="img/champions/@(match.Champion).png" class="champion-icon" />
+                                    <span class="champion-level">@match.ChampionLevel</span>
+                                </div>
+                                <div class="match-stats">
+                                    <div class="kda">
+                                        <span class="kills">@match.Kills</span> /
+                                        <span class="deaths">@match.Deaths</span> /
+                                        <span class="assists">@match.Assists</span>
+                                    </div>
+                                    <div class="additional-stats">
+                                        <span class="cs">@match.CS CS</span>
+                                        <span class="vision">@match.VisionScore Vision</span>
+                                    </div>
+                                </div>
+                                <div class="items">
+                                    @foreach (var item in match.Items)
+                                    {
+                                        <img src="img/items/@(item).png" class="item-icon" />
+                                    }
+                                </div>
+                                <div class="game-info">
+                                    <span class="game-duration">@match.Duration</span>
+                                    <span class="game-type">@match.GameType</span>
+                                    <span class="game-result">@(match.IsWin ? "Victory" : "Defeat")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
-            }
-
-            <button class="primary-btn fetch-btn" @onclick="FetchRankedData">
-                <i class="fas fa-sync-alt"></i>
-                Refresh Data
-            </button>
-
-            @if (_rankedEntry != null)
-            {
-                <div class="ranked-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-trophy"></i>
-                        Ranked Solo/Duo
-                    </h3>
-                    <div class="ranked-grid">
-                        <div class="ranked-item">
-                            <span>Tier</span>
-                            <strong>@_rankedEntry.Tier</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Division</span>
-                            <strong>@_rankedEntry.Division</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>LP</span>
-                            <strong>@_rankedEntry.LeaguePoints</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Wins</span>
-                            <strong>@_rankedEntry.Wins</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Losses</span>
-                            <strong>@_rankedEntry.Losses</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Win Ratio</span>
-                            <strong>@_rankedEntry.WinRatio%</strong>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if (_flexEntry != null)
-            {
-                <div class="ranked-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-users"></i>
-                        Ranked Flex
-                    </h3>
-                    <div class="ranked-grid">
-                        <div class="ranked-item">
-                            <span>Tier</span>
-                            <strong>@_flexEntry.Tier</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Division</span>
-                            <strong>@_flexEntry.Division</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>LP</span>
-                            <strong>@_flexEntry.LeaguePoints</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Wins</span>
-                            <strong>@_flexEntry.Wins</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Losses</span>
-                            <strong>@_flexEntry.Losses</strong>
-                        </div>
-                        <div class="ranked-item">
-                            <span>Win Ratio</span>
-                            <strong>@_flexEntry.WinRatio%</strong>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if (_wallet != null)
-            {
-                <div class="wallet-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-wallet"></i>
-                        Wallet
-                    </h3>
-                    <div class="wallet-grid">
-                        <div class="wallet-item be">
-                            <span>Blue Essence</span>
-                            <strong>@_wallet.LolBlueEssence</strong>
-                        </div>
-                        <div class="wallet-item rp">
-                            <span>Riot Points</span>
-                            <strong>@_wallet.Rp</strong>
-                        </div>
-                    </div>
-                </div>
-            }
+            </div>
         </div>
     }
     else
@@ -157,15 +127,33 @@
     private RankedEntryDto? _rankedEntry;
     private RankedEntryDto? _flexEntry;
     private WalletDto? _wallet;
-    private RegionDto? _region;
     private bool _isClientRunning = false;
     private Timer _refreshTimer;
+
+    private List<MatchHistoryItem> _matches = new()
+    {
+        new MatchHistoryItem
+        {
+            IsWin = true,
+            Champion = "Jinx",
+            ChampionLevel = 7,
+            Kills = 8,
+            Deaths = 2,
+            Assists = 14,
+            CS = 278,
+            VisionScore = 25,
+            Items = new[] { 6671, 6672, 6673, 6674, 6675, 6676 },
+            Duration = "32:15",
+            GameType = "Ranked Solo"
+        }
+    };
 
     protected override async Task OnInitializedAsync()
     {
         _account = AccountRepository.GetAll().FirstOrDefault(a => a.Username == Username);
 
         await CheckClientStatusAsync();
+        await FetchWalletData();
 
         if (_isClientRunning)
         {
@@ -214,23 +202,25 @@
             _rankedEntry = null;
             _flexEntry = null;
         }
-
-        FetchWalletData();
-        FetchRegionLocale();
     }
 
     private async Task FetchWalletData()
     {
         _wallet = await LcuService.GetAsync<WalletDto>("/lol-inventory/v1/wallet?currencyTypes=[\"RP\",\"lol_blue_essence\"]");
     }
-
-    private async Task FetchRegionLocale()
-    {
-        _region = await LcuService.GetAsync<RegionDto>("/riotclient/region-locale");
-    }
     
     private void ReturnToMain()
     {
         NavigationManager.NavigateTo("/");
     }
-}
+
+    private string GetRankImagePath(string tier)
+    {
+        if (string.IsNullOrWhiteSpace(tier))
+            return string.Empty;
+
+        var normalizedTier = tier.ToLower().Replace(" ", "");
+        var imageName = $"rank_{normalizedTier}.png";
+        return FileHelpers.AppPackageFileExists(imageName) ? $"/{imageName}" : string.Empty;
+    }
+} 

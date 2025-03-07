@@ -45,19 +45,29 @@
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <MauiImage Include="Resources\Raw\rank_bronze.png" />
+        <MauiImage Include="Resources\Raw\rank_challenger.png" />
+        <MauiImage Include="Resources\Raw\rank_diamond.png" />
+        <MauiImage Include="Resources\Raw\rank_emerald.png" />
+        <MauiImage Include="Resources\Raw\rank_gold.png" />
+        <MauiImage Include="Resources\Raw\rank_grandmaster.png" />
+        <MauiImage Include="Resources\Raw\rank_iron.png" />
+        <MauiImage Include="Resources\Raw\rank_master.png" />
+        <MauiImage Include="Resources\Raw\rank_platinum.png" />
+        <MauiImage Include="Resources\Raw\rank_silver.png" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        <Content Include="Resources\Raw\*.png" Link="wwwroot\%(Filename)%(Extension)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -90,6 +100,10 @@
 
     <ItemGroup>
       <Content Remove="Resources\Raw\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources\Images\" />
     </ItemGroup>
 
 </Project>

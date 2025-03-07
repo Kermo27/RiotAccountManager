@@ -7,16 +7,16 @@ public class Account
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Username { get; set; } = string.Empty;
-    public byte[] EncryptedPassword { get; set; }
+    public byte[] EncryptedPassword { get; set; } = null!;
 
     [JsonIgnore]
-    public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
     public string? Nickname { get; set; }
-    public string Region { get; set; }
+    public string Region { get; set; } = string.Empty;
 
     public string GetDecryptedPassword(IEncryptionService encryptionService)
     {
-        if (EncryptedPassword == null || EncryptedPassword.Length == 0)
+        if (EncryptedPassword.Length == 0)
             return string.Empty;
 
         try
