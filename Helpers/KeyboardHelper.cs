@@ -11,10 +11,8 @@ public static class KeyboardHelper
 
     public static void PasteText(string text)
     {
-        // Ustaw tekst w schowku
         ClipboardHelper.SetText(text);
 
-        // Symulacja: naciśnięcie Ctrl+V
         keybd_event(VirtualKey.VK_CONTROL, 0, 0, IntPtr.Zero);
         keybd_event(VirtualKey.VK_V, 0, 0, IntPtr.Zero);
         Thread.Sleep(50);

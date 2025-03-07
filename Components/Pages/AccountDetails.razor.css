@@ -187,6 +187,44 @@
     color: #f7f7f7;
 }
 
+.loading-overlay {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    color: #ff4654;
+}
+
+.error-message {
+    color: #e74c3c;
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.match-item.win .match-result-bar {
+    background: #2ecc71;
+}
+
+.match-item.lose .match-result-bar {
+    background: #e74c3c;
+}
+
+.champion-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.game-duration {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.game-result {
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .account-layout {
         grid-template-columns: 1fr;

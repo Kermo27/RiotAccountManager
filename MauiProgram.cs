@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Data.Repositories;
 using RiotAccountManager.MAUI.Services.EncryptionService;
 using RiotAccountManager.MAUI.Services.LcuService;
+using RiotAccountManager.MAUI.Services.MatchHistoryService;
 using RiotAccountManager.MAUI.Services.RiotClientService;
 
 namespace RiotAccountManager.MAUI;
@@ -28,6 +29,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         builder.Services.AddSingleton<AccountRepository>();
+        builder.Services.AddSingleton<IPreferences>(Preferences.Default);
 
         builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
         builder.Services.AddScoped<IRiotClientService, RiotClientService>();
@@ -35,6 +37,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IRiotClientLockfileService, RiotClientLockfileService>();
         builder.Services.AddScoped<IRiotClientUIAutomationService, RiotClientUIAutomationService>();
         builder.Services.AddScoped<ILcuService, LcuService>();
+        builder.Services.AddSingleton<IMatchHistoryService, MatchHistoryService>();
 
         return builder.Build();
     }
