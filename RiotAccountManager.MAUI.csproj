@@ -45,16 +45,6 @@
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-        <MauiImage Include="Resources\Raw\rank_bronze.png" />
-        <MauiImage Include="Resources\Raw\rank_challenger.png" />
-        <MauiImage Include="Resources\Raw\rank_diamond.png" />
-        <MauiImage Include="Resources\Raw\rank_emerald.png" />
-        <MauiImage Include="Resources\Raw\rank_gold.png" />
-        <MauiImage Include="Resources\Raw\rank_grandmaster.png" />
-        <MauiImage Include="Resources\Raw\rank_iron.png" />
-        <MauiImage Include="Resources\Raw\rank_master.png" />
-        <MauiImage Include="Resources\Raw\rank_platinum.png" />
-        <MauiImage Include="Resources\Raw\rank_silver.png" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -71,17 +61,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlossomiShymae.GrrrLCU" Version="0.14.0" />
-        <PackageReference Include="Kunc.RiotGames.Api" Version="0.9.0" />
-        <PackageReference Include="Kunc.RiotGames.Core" Version="0.9.0" />
-        <PackageReference Include="Kunc.RiotGames.Lol.DataDragon" Version="0.9.0" />
-        <PackageReference Include="Kunc.RiotGames.Lol.GameClient" Version="0.9.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.2" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-        <PackageReference Include="MudBlazor" Version="8.3.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Serilog" Version="4.2.1-dev-02340" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.2" />
     </ItemGroup>
 
@@ -95,6 +82,9 @@
       <Compile Update="MainPage.xaml.cs">
         <DependentUpon>MainPage.xaml</DependentUpon>
         <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Components\Pages\Dashboard.razor.cs">
+        <DependentUpon>Dashboard.razor</DependentUpon>
       </Compile>
     </ItemGroup>
 

@@ -29,8 +29,8 @@ public class Account
         }
     }
 
-    public bool IsExistingAccount()
+    public static bool IsExistingAccount(string id)
     {
-        return !string.IsNullOrEmpty(this.Id);
+        return !string.IsNullOrEmpty(id);
     }
 }

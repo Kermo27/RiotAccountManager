@@ -2,7 +2,7 @@
 
 public interface IRiotClientProcessService
 {
-    string FindRiotClientPath();
+    string? FindRiotClientPath();
     bool IsClientRunning();
     void StartClientProcess(string clientPath);
 }

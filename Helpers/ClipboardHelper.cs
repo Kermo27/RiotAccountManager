@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace RiotAccountManager.MAUI.Helpers;
 
 public static class ClipboardHelper
 {
-    private const uint CF_UNICODETEXT = 13;
-    private const uint GMEM_MOVEABLE = 0x0002;
+    private const uint CfUnicodeText = 13;
+    private const uint GmemMoveable = 0x0002;
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool OpenClipboard(IntPtr hWndNewOwner);
@@ -28,6 +29,9 @@ public static class ClipboardHelper
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool GlobalUnlock(IntPtr hMem);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GlobalFree(IntPtr hMem);
+
     public static bool SetText(string text)
     {
         if (!OpenClipboard(IntPtr.Zero))
@@ -35,31 +39,45 @@ public static class ClipboardHelper
 
         try
         {
-            EmptyClipboard();
-            // Oblicz rozmiar pamięci: (ilość znaków + 1) * 2 bajty (Unicode)
-            var bytes = (text.Length + 1) * 2;
-            IntPtr hGlobal = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)bytes);
+            if (!EmptyClipboard())
+                return false;
+
+            // Calculate the number of bytes required (including null terminator)
+            var byteCount = (text.Length + 1) * 2;
+            var hGlobal = GlobalAlloc(GmemMoveable, (UIntPtr)byteCount);
             if (hGlobal == IntPtr.Zero)
                 return false;
 
-            IntPtr target = GlobalLock(hGlobal);
+            var target = GlobalLock(hGlobal);
             if (target == IntPtr.Zero)
+            {
+                GlobalFree(hGlobal);
                 return false;
+            }
 
-            // Skopiuj tekst do zaalokowanej pamięci
-            char[] chars = text.ToCharArray();
+            // Copy string to unmanaged memory
+            var chars = text.ToCharArray();
             Marshal.Copy(chars, 0, target, text.Length);
-            // Zapisz znak null jako terminator
+            // Add null terminator
             Marshal.WriteInt16(target, text.Length * 2, 0);
+
             GlobalUnlock(hGlobal);
 
-            if (SetClipboardData(CF_UNICODETEXT, hGlobal) == IntPtr.Zero)
+            // Set the clipboard data
+            var result = SetClipboardData(CfUnicodeText, hGlobal);
+            if (result == IntPtr.Zero)
+            {
+                // Free the memory if the clipboard operation failed
+                GlobalFree(hGlobal);
                 return false;
+            }
+
+            // On success, the system owns the memory so do not free hGlobal.
+            return true;
         }
         finally
         {
             CloseClipboard();
         }
-        return true;
     }
 }

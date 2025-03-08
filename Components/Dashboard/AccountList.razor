@@ -6,8 +6,7 @@
         <div class="account-item" @key="account.Id">
             <div class="account-info">
 
-                <div class="account-details"
-                     @onclick="() => HandleAccountSelected(account.Username)">
+                <div class="account-details">
                     <h3 class="account-nickname">@account.Nickname</h3>
                     <span class="account-region">@account.Region</span>
                 </div>
@@ -42,11 +41,8 @@
 @code {
 
     [Parameter]
-    public List<Account> Accounts { get; set; }
-
-    [Parameter]
-    public EventCallback<string> OnAccountSelected { get; set; }
-
+    public List<Account>? Accounts { get; set; }
+    
     [Parameter]
     public EventCallback<Account> OnLoginRequested { get; set; }
 
@@ -55,9 +51,4 @@
 
     [Parameter]
     public EventCallback<string> OnDeleteRequested { get; set; }
-
-    private async Task HandleAccountSelected(string username)
-    {
-        await OnAccountSelected.InvokeAsync(username);
-    }
 }

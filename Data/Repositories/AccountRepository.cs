@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Data.Models;
-using RiotAccountManager.MAUI.Services.EncryptionService;
 
 namespace RiotAccountManager.MAUI.Data.Repositories;
 
@@ -9,14 +9,12 @@ public class AccountRepository
     private readonly string _filePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "RiotAccountManager",
-        "accounts.json"
-    );
+        "accounts.json");
+    private readonly ILogger<AccountRepository> _logger;
 
-    private readonly IEncryptionService _encryption;
-
-    public AccountRepository(IEncryptionService encryption)
+    public AccountRepository(ILogger<AccountRepository> logger)
     {
-        _encryption = encryption;
+        _logger = logger;
         EnsureDirectoryExists();
     }
 
@@ -29,48 +27,51 @@ public class AccountRepository
         }
     }
 
-    public List<Account> GetAll()
+    public async Task<List<Account>> GetAllAsync()
     {
         if (!File.Exists(_filePath))
+        {
+            _logger.LogInformation("Accounts file not found. Returning an empty list.");
+            
             return new List<Account>();
+        }
 
         try
         {
-            var json = File.ReadAllText(_filePath);
-
-            if (string.IsNullOrWhiteSpace(json))
-                return new List<Account>();
-
-            var accounts = JsonConvert.DeserializeObject<List<Account>>(json);
-
-            if (accounts == null)
-                return new List<Account>();
-
-            return accounts;
+            await using var stream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
+            var accounts = await JsonSerializer.DeserializeAsync<List<Account>>(stream);
+            
+            return accounts ?? new List<Account>();
         }
-        catch (Exception ex) when (ex is JsonReaderException || ex is JsonSerializationException)
+        catch (JsonException ex)
         {
-            Console.WriteLine($"Error loading accounts: {ex.Message}");
+            _logger.LogError(ex, "Error deserializing accounts from JSON.");
+            
+            return new List<Account>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error reading accounts file.");
+            
             return new List<Account>();
         }
     }
 
-    public void SaveAll(List<Account> accounts)
+    public async Task SaveAllAsync(List<Account> accounts)
     {
         try
         {
             var validAccounts = accounts
-                .Where(a =>
-                    !string.IsNullOrWhiteSpace(a.Username) && a.EncryptedPassword?.Length > 0
-                )
+                .Where(a => !string.IsNullOrWhiteSpace(a.Username) && a.EncryptedPassword?.Length > 0)
                 .ToList();
 
-            var json = JsonConvert.SerializeObject(validAccounts);
-            File.WriteAllText(_filePath, json);
+            await using var stream = new FileStream(_filePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            await JsonSerializer.SerializeAsync(stream, validAccounts, new JsonSerializerOptions { WriteIndented = true });
         }
         catch (Exception ex)
         {
-            throw new ApplicationException("Błąd zapisu danych", ex);
+            _logger.LogError(ex, "Error saving accounts to file.");
+            throw new ApplicationException("Error saving account data.", ex);
         }
     }
 }

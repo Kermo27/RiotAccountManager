@@ -2,7 +2,7 @@
 
 namespace RiotAccountManager.MAUI.Services.RiotClientService;
 
-public interface IRiotClientUIAutomationService
+public interface IRiotClientUiAutomationService
 {
-    void AutomateLoginUI(Account account);
+    Task AutomateLoginUi(Account account);
 }

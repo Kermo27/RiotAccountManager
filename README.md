@@ -26,15 +26,12 @@ After installation, launch the application and use the following general steps:
 
 Currently, RiotAccountManager provides a generic interface for account management. Future enhancements will include:
 
-- **Game-Specific Settings**: Tailor configurations such as in-game languages, preferred regions, and other custom settings specific to each Riot game.
 - **Custom Themes**: Options to change the visual appearance to suit personal preferences.
 
 Refer to the [TODO](#todo) section for upcoming features.
 
 ## TODO
 
-- [ ] **Implement Game-Specific Settings**: Enable users to configure settings uniquely for different Riot games.
-- [ ] **Integrate Riot API**: Add real-time account verification and in-game data integration.
 - [ ] **Improve UI/UX**: Enhance the visual interface and interaction for a more intuitive user experience.
 - [ ] **Add Custom Themes**: Allow users to choose or create custom themes within the application.
 - [ ] **Unit Testing & CI/CD**: Improve code quality and streamline deployments by integrating automated tests and CI/CD pipelines.

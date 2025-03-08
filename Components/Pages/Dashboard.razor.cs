@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Data.Models;
 using RiotAccountManager.MAUI.Data.Repositories;
 using RiotAccountManager.MAUI.Services.EncryptionService;
@@ -16,9 +18,10 @@ public partial class DashboardBase : ComponentBase
 
     [Inject]
     protected IEncryptionService Encryptor { get; set; } = null!;
-
+    
     [Inject]
-    protected NavigationManager NavigationManager { get; set; } = null!;
+    private ILogger<DashboardBase> Logger { get; set; } = null!;
+
 
     protected List<Account> Accounts = new();
     protected Account NewAccount = new();
@@ -46,9 +49,21 @@ public partial class DashboardBase : ComponentBase
         "KR",
     };
 
-    protected override void OnInitialized() => LoadAccounts();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadAccounts();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while initializing the dashboard.");
+            ErrorMessage = "An unexpected error occurred. Please try again later.";
+        }
+    }
 
-    protected void LoadAccounts() => Accounts = Repository.GetAll();
+
+    private async Task LoadAccounts() => Accounts = await Repository.GetAllAsync();
 
     protected void OpenAddDialog()
     {
@@ -58,7 +73,6 @@ public partial class DashboardBase : ComponentBase
             Nickname = string.Empty,
             Username = string.Empty,
             Password = string.Empty,
-            Region = "EUW",
         };
         ErrorMessage = string.Empty;
         ShowAddDialog = true;
@@ -102,9 +116,9 @@ public partial class DashboardBase : ComponentBase
         {
             ErrorMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(NewAccount.Nickname))
+            if (!ValidateNickname(NewAccount.Nickname))
             {
-                ErrorMessage = "Account name is required!";
+                ErrorMessage = "Nickname must be in the format 'name#tag', with up to 5 characters after '#'.";
                 return;
             }
             if (string.IsNullOrWhiteSpace(NewAccount.Username))
@@ -120,16 +134,24 @@ public partial class DashboardBase : ComponentBase
                 return;
             }
 
-            NewAccount.Id = Guid.NewGuid().ToString();
-            NewAccount.EncryptedPassword = Encryptor.Encrypt(NewAccount.Password);
-            Accounts.Add(NewAccount);
+            var account = new Account
+            {
+                Id = Guid.NewGuid().ToString(),
+                Nickname = NewAccount.Nickname,
+                Username = NewAccount.Username,
+                Region = NewAccount.Region,
+                EncryptedPassword = Encryptor.Encrypt(NewAccount.Password)
+            };
 
-            Repository.SaveAll(Accounts);
+            Accounts.Add(account);
+            await Repository.SaveAllAsync(Accounts);
             CloseAddDialog();
-            LoadAccounts();
+            await LoadAccounts();
+            Logger.LogInformation("New account '{Nickname}' created successfully.", NewAccount.Nickname);
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Error saving new account '{Nickname}'.", NewAccount.Nickname);
             ErrorMessage = $"Error saving account: {ex.Message}";
         }
     }
@@ -140,9 +162,9 @@ public partial class DashboardBase : ComponentBase
         {
             ErrorMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(EditAccountModel.Nickname))
+            if (!ValidateNickname(EditAccountModel.Nickname))
             {
-                ErrorMessage = "Account name is required!";
+                ErrorMessage = "Nickname must be in the format 'name#tag', with up to 5 characters after '#'.";
                 return;
             }
             if (string.IsNullOrWhiteSpace(EditAccountModel.Username))
@@ -163,9 +185,9 @@ public partial class DashboardBase : ComponentBase
                     account.EncryptedPassword = Encryptor.Encrypt(EditAccountModel.Password);
                 }
 
-                Repository.SaveAll(Accounts);
+                await Repository.SaveAllAsync(Accounts);
                 CloseEditDialog();
-                LoadAccounts();
+                await LoadAccounts();
             }
         }
         catch (Exception ex)
@@ -180,36 +202,34 @@ public partial class DashboardBase : ComponentBase
         ShowDeleteConfirmation = true;
     }
 
-    protected void ConfirmDelete()
+    protected async Task ConfirmDelete()
     {
         Accounts.RemoveAll(a => a.Id == _accountToDeleteId);
-        Repository.SaveAll(Accounts);
+        await Repository.SaveAllAsync(Accounts);
         ShowDeleteConfirmation = false;
-        LoadAccounts();
+        await LoadAccounts();
     }
 
     protected void CancelDelete() => ShowDeleteConfirmation = false;
 
     protected async Task Login(Account account)
     {
-        NavigateToDetails(account.Username);
-
         await RiotClient.AutoLogin(account);
     }
 
     protected static async Task OpenBuyMeACoffee()
     {
         const string url = "https://buymeacoffee.com/kermo";
-        try
-        {
-            await Launcher.Default.OpenAsync(url);
-        }
-        catch (Exception ex)
-        {
-            // Handle exception
-        }
+        
+        await Launcher.Default.OpenAsync(url);
     }
+    
+    private bool ValidateNickname(string nickname)
+    {
+        if (string.IsNullOrWhiteSpace(nickname))
+            return false;
 
-    protected void NavigateToDetails(string username) =>
-        NavigationManager.NavigateTo($"/accountDetails/{username}");
+        var regex = new Regex(@"^[^#]+#[^#]{1,5}$");
+        return regex.IsMatch(nickname);
+    }
 }
