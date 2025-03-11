@@ -34,66 +34,67 @@
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
 
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>-->
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>-->
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>-->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
     </PropertyGroup>
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Include="Resources\Images\*"/>
 
         <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*" />
+        <MauiFont Include="Resources\Fonts\*"/>
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-        <Content Include="Resources\Raw\*.png" Link="wwwroot\%(Filename)%(Extension)" />
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Content Include="Resources\Raw\*.png" Link="wwwroot\%(Filename)%(Extension)"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Serilog" Version="4.2.1-dev-02340" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.2" />
+        <PackageReference Include="H.InputSimulator" Version="1.5.0"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Serilog" Version="4.2.1-dev-02340"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <MauiXaml Update="MainPage.xaml">
-        <SubType>Designer</SubType>
-      </MauiXaml>
+        <MauiXaml Update="MainPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="MainPage.xaml.cs">
-        <DependentUpon>MainPage.xaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Components\Pages\Dashboard.razor.cs">
-        <DependentUpon>Dashboard.razor</DependentUpon>
-      </Compile>
+        <Compile Update="MainPage.xaml.cs">
+            <DependentUpon>MainPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Components\Pages\Dashboard.razor.cs">
+            <DependentUpon>Dashboard.razor</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="Resources\Raw\appsettings.json" />
+        <Content Remove="Resources\Raw\appsettings.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Resources\Images\" />
+        <Folder Include="Resources\Images\"/>
     </ItemGroup>
 
 </Project>

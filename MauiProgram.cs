@@ -13,14 +13,11 @@ public static class MauiProgram
             .WriteTo.Console()
             .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
-        
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
+            .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
         builder.Services.AddMauiBlazorWebView();
 
@@ -31,7 +28,7 @@ public static class MauiProgram
         builder.Services.AddApplicationServices();
 
         builder.Logging.AddSerilog();
-        
+
         return builder.Build();
     }
 }

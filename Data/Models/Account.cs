@@ -28,9 +28,4 @@ public class Account
             return "DECRYPTION_ERROR";
         }
     }
-
-    public static bool IsExistingAccount(string id)
-    {
-        return !string.IsNullOrEmpty(id);
-    }
 }
