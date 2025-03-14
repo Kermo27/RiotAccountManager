@@ -99,4 +99,11 @@
         <Folder Include="Resources\Images\"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <MauiPlatformSpecificFolder Remove="Platforms\Tizen\" />
+      <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\" />
+      <MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
+      <MauiPlatformSpecificFolder Remove="Platforms\Android\" />
+    </ItemGroup>
+
 </Project>
