@@ -1,0 +1,73 @@
+@using System.Diagnostics
+@using RiotAccountManager.MAUI.Services.ApplicationUpdateService
+@implements IDisposable
+@if (UpdateAvailable)
+{
+    <div class="update-banner">
+        <span>A new version of Riot Account Manager is available.</span>
+        <button @onclick="StartUpdate">Update now</button>
+        <button @onclick="Dismiss">Later</button>
+    </div>
+}
+
+@code {
+    [Inject] public IApplicationUpdateService ApplicationUpdateService { get; set; }
+
+    private bool UpdateAvailable { get; set; }
+    private Version LatestVersion { get; set; }
+    private Timer _dismissTimer;
+    private const int DismissHours = 6;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var lastDismissed = Preferences.Get("last_update_dismiss", DateTime.MinValue);
+        if (DateTime.UtcNow - lastDismissed > TimeSpan.FromHours(DismissHours))
+        {
+            var version = await ApplicationUpdateService.CheckForUpdates();
+            if (version != null)
+            {
+                UpdateAvailable = true;
+                LatestVersion = version;
+            }
+        }
+    }
+
+    private async Task StartUpdate()
+    {
+        var tempPath = Path.Combine(FileSystem.CacheDirectory, "update.pkg");
+        await ApplicationUpdateService.DownloadUpdate(tempPath);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "msiexec",
+            Arguments = $"/i \"{tempPath}\" /quiet",
+            UseShellExecute = true
+        });
+        Application.Current.Quit();
+    }
+
+    private void Dismiss()
+    {
+        UpdateAvailable = false;
+        Preferences.Set("last_update_dismiss", DateTime.UtcNow);
+
+        _dismissTimer = new Timer(_ =>
+        {
+            InvokeAsync(async () =>
+            {
+                var version = await ApplicationUpdateService.CheckForUpdates();
+                if (version != null)
+                {
+                    UpdateAvailable = true;
+                    StateHasChanged();
+                }
+            });
+        }, null, TimeSpan.FromHours(DismissHours), Timeout.InfiniteTimeSpan);
+    }
+
+    public void Dispose()
+    {
+        _dismissTimer?.Dispose();
+    }
+
+}
