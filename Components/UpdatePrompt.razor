@@ -1,73 +1,36 @@
-@using System.Diagnostics
 @using RiotAccountManager.MAUI.Services.ApplicationUpdateService
-@implements IDisposable
-@if (UpdateAvailable)
+@if (_updateAvailable)
 {
     <div class="update-banner">
         <span>A new version of Riot Account Manager is available.</span>
-        <button @onclick="StartUpdate">Update now</button>
-        <button @onclick="Dismiss">Later</button>
+        <button @onclick="Update">Update now</button>
     </div>
 }
 
 @code {
     [Inject] public IApplicationUpdateService ApplicationUpdateService { get; set; }
 
-    private bool UpdateAvailable { get; set; }
-    private Version LatestVersion { get; set; }
-    private Timer _dismissTimer;
-    private const int DismissHours = 6;
+    private bool _updateAvailable;
 
     protected override async Task OnInitializedAsync()
     {
-        var lastDismissed = Preferences.Get("last_update_dismiss", DateTime.MinValue);
-        if (DateTime.UtcNow - lastDismissed > TimeSpan.FromHours(DismissHours))
+        if (await ApplicationUpdateService.CheckForUpdates())
         {
-            var version = await ApplicationUpdateService.CheckForUpdates();
-            if (version != null)
-            {
-                UpdateAvailable = true;
-                LatestVersion = version;
-            }
+            _updateAvailable = true;
         }
     }
 
-    private async Task StartUpdate()
+    private async Task Update()
     {
-        var tempPath = Path.Combine(FileSystem.CacheDirectory, "update.pkg");
-        await ApplicationUpdateService.DownloadUpdate(tempPath);
-
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName = "msiexec",
-            Arguments = $"/i \"{tempPath}\" /quiet",
-            UseShellExecute = true
-        });
-        Application.Current.Quit();
-    }
-
-    private void Dismiss()
-    {
-        UpdateAvailable = false;
-        Preferences.Set("last_update_dismiss", DateTime.UtcNow);
-
-        _dismissTimer = new Timer(_ =>
+            await ApplicationUpdateService.DownloadAndApplyUpdate();
+            _updateAvailable = false;
+        }
+        catch (Exception ex)
         {
-            InvokeAsync(async () =>
-            {
-                var version = await ApplicationUpdateService.CheckForUpdates();
-                if (version != null)
-                {
-                    UpdateAvailable = true;
-                    StateHasChanged();
-                }
-            });
-        }, null, TimeSpan.FromHours(DismissHours), Timeout.InfiniteTimeSpan);
-    }
-
-    public void Dispose()
-    {
-        _dismissTimer?.Dispose();
+            // Obsłuż błąd
+        }
     }
 
 }

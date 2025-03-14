@@ -1,42 +1,100 @@
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security;
+using System.Security.Cryptography;
 using System.Text.Json;
 using RiotAccountManager.MAUI.Data.Models;
 
 namespace RiotAccountManager.MAUI.Services.ApplicationUpdateService;
 
-public class ApplicationUpdateService : IApplicationUpdateService
+public class ApplicationUpdateService : IApplicationUpdateService, IDisposable
 {
     private const string RepoUrl = "https://api.github.com/repos/Kermo27/RiotAccountManager/releases/latest";
-    private GitHubRelease _latestRelease;
+    private const string UpdateFileName = "RiotAccountManager.zip";
+    private readonly HttpClient _client;
+    private GitHubRelease _release;
 
-    public async Task<Version> CheckForUpdates()
+    public ApplicationUpdateService()
     {
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RiotAccountManager", "1.0"));
-
-        var response = await client.GetStringAsync(RepoUrl);
-        var release = JsonSerializer.Deserialize<GitHubRelease>(response);
-
-        var latestVersion = new Version(_latestRelease.TagName.TrimStart('v'));
-        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
-        return latestVersion > currentVersion ? latestVersion : null;
+        _client = new HttpClient();
+        _client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RiotManager", "1.0"));
     }
 
-    public async Task DownloadUpdate(string downloadPath)
+    public async Task<bool> CheckForUpdates()
     {
-        if (_latestRelease?.Assets == null || !_latestRelease.Assets.Any())
+        var response = await _client.GetStringAsync(RepoUrl);
+        _release = JsonSerializer.Deserialize<GitHubRelease>(response);
+
+        var latestVersion = new Version(_release.TagName.TrimStart('v'));
+        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+        return latestVersion > currentVersion;
+    }
+
+    public async Task DownloadAndApplyUpdate()
+    {
+        var zipAsset = _release.Assets.FirstOrDefault(a => a.Name.EndsWith(".zip"));
+        if (zipAsset == null)
         {
-            throw new InvalidOperationException("No files to download.");
+            throw new Exception("Brak pliku ZIP w release");
         }
 
-        var assetUrl = _latestRelease.Assets[0].BrowserDownloadUrl;
+        var tempPath = Path.Combine(Path.GetTempPath(), UpdateFileName);
 
-        using var httpClient = new HttpClient();
-        var stream = await httpClient.GetStreamAsync(assetUrl);
+        using var response = await _client.GetAsync(zipAsset.BrowserDownloadUrl);
+        using var fs = new FileStream(tempPath, FileMode.Create);
+        await response.Content.CopyToAsync(fs);
 
-        using var fileStream = new FileStream(downloadPath, FileMode.Create);
-        await stream.CopyToAsync(fileStream);
+        await VerifyChecksum(tempPath);
+
+        await ApplyUpdate(tempPath);
+    }
+
+    public void Dispose()
+    {
+        _client?.Dispose();
+    }
+
+    private async Task VerifyChecksum(string filePath)
+    {
+        var checksumAsset = _release.Assets.FirstOrDefault(a => a.Name == "checksum.sha256");
+        if (checksumAsset == null)
+        {
+            throw new Exception("Brak pliku checksum");
+        }
+
+        var expectedHash = await _client.GetStringAsync(checksumAsset.BrowserDownloadUrl);
+        using var sha = SHA256.Create();
+        using var stream = File.OpenRead(filePath);
+        var actualHash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "");
+
+        if (actualHash != expectedHash)
+        {
+            throw new SecurityException("Nieprawidłowy checksum pliku!");
+        }
+    }
+
+    private async Task ApplyUpdate(string zipPath)
+    {
+        var appPath = AppDomain.CurrentDomain.BaseDirectory;
+        var updaterScript = @$"
+            @echo off
+            timeout /t 3 /nobreak >nul
+            tar -xf ""{zipPath}"" -C ""{appPath}""
+            del ""{zipPath}""
+            start """" ""{Process.GetCurrentProcess().MainModule.FileName}""
+            del ""%~f0""";
+
+        File.WriteAllText("update.bat", updaterScript);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "update.bat",
+            WindowStyle = ProcessWindowStyle.Hidden,
+            UseShellExecute = true
+        });
+
+        Environment.Exit(0);
     }
 }
