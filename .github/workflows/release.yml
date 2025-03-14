@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CSPROJ: RiotAccountManager.MAUI.csproj
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Install MAUI Workloads
+      run: |
+        dotnet workload install maui-windows
+        dotnet workload restore --skip-manifest-update
+
+    - name: Publish Windows
+      run: |
+        dotnet publish $env:CSPROJ `
+          -c Release `
+          -f net9.0-windows10.0.19041.0 `
+          -p:WindowsPackageType=None `
+          -p:EnableMauiTizen=false `
+          -o published
+
+    - name: Create ZIP
+      run: |
+        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        Compress-Archive -Path ./published/* -DestinationPath RiotManager-v$version.zip
+
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: RiotManager-v${{ github.ref_name }}.zip
