@@ -3,42 +3,36 @@
 @inherits DashboardBase
 
 <div class="app-container">
-    <AppHeader Title="Riot Account Manager" OnAddClicked="OpenAddDialog" />
+    <AppHeader Title="Riot Account Manager" OnAddClicked="OpenAddDialog"/>
 
     <AccountList
         Accounts="Accounts"
         OnLoginRequested="Login"
         OnEditRequested="OpenEditDialog"
-        OnDeleteRequested="DeleteAccount" />
+        OnDeleteRequested="DeleteAccount"/>
 
-    @if (ShowAddDialog)
-    {
-        <AddAccountModal
-            Show="true"
-            Account="NewAccount"
-            Regions="Regions"
-            ErrorMessage="@ErrorMessage"
-            OnClose="CloseAddDialog"
-            OnSave="SaveNewAccount" />
-    }
-
-    @if (ShowEditDialog)
-    {
-        <EditAccountModal
-            Show="true"
-            EditAccountModel="EditAccountModel"
-            Regions="Regions"
-            ErrorMessage="@ErrorMessage"
-            OnClose="CloseEditDialog"
-            OnSave="SaveEditedAccount" />
-    }
+    <AddAccountModal
+        Show="ShowAddDialog"
+        Account="NewAccount"
+        Regions="Regions"
+        ErrorMessage="@ErrorMessage"
+        OnClose="CloseAddDialog"
+        OnSave="SaveNewAccount"/>
+    
+    <EditAccountModal
+        Show="ShowEditDialog"
+        EditAccountModel="EditAccountModel"
+        Regions="Regions"
+        ErrorMessage="@ErrorMessage"
+        OnClose="CloseEditDialog"
+        OnSave="SaveEditedAccount"/>
 
     <DeleteConfimationModal
         Show="ShowDeleteConfirmation"
         OnConfirm="ConfirmDelete"
-        OnCancel="CancelDelete" />
+        OnCancel="CancelDelete"/>
 
-    <SupportButton OnClick="OpenBuyMeACoffee" />
+    <SupportButton OnClick="OpenBuyMeACoffee"/>
 
-    <SecurityWarning />
+    <SecurityWarning/>
 </div>

@@ -8,32 +8,8 @@ using RiotAccountManager.MAUI.Services.RiotClientService;
 
 namespace RiotAccountManager.MAUI.Components.Pages;
 
-public partial class DashboardBase : ComponentBase
+public class DashboardBase : ComponentBase
 {
-    [Inject]
-    protected AccountRepository Repository { get; set; } = null!;
-
-    [Inject]
-    protected IRiotClientService RiotClient { get; set; } = null!;
-
-    [Inject]
-    protected IEncryptionService Encryptor { get; set; } = null!;
-    
-    [Inject]
-    private ILogger<DashboardBase> Logger { get; set; } = null!;
-
-
-    protected List<Account> Accounts = new();
-    protected Account NewAccount = new();
-    protected Account EditAccountModel = new();
-    protected bool ShowAddDialog;
-    protected bool ShowEditDialog;
-    protected bool ShowDeleteConfirmation;
-
-    private string _accountToDeleteId = string.Empty;
-
-    protected string ErrorMessage { get; set; } = string.Empty;
-
     protected readonly List<string> Regions = new()
     {
         "EUW",
@@ -46,8 +22,28 @@ public partial class DashboardBase : ComponentBase
         "LAN",
         "LAS",
         "JP",
-        "KR",
+        "KR"
     };
+
+    private string _accountToDeleteId = string.Empty;
+
+
+    protected List<Account> Accounts = new();
+    protected Account EditAccountModel = new();
+    protected Account NewAccount = new();
+    protected bool ShowAddDialog;
+    protected bool ShowDeleteConfirmation;
+    protected bool ShowEditDialog;
+
+    [Inject] protected AccountRepository Repository { get; set; } = null!;
+
+    [Inject] protected IRiotClientService RiotClient { get; set; } = null!;
+
+    [Inject] protected IEncryptionService Encryptor { get; set; } = null!;
+
+    [Inject] private ILogger<DashboardBase> Logger { get; set; } = null!;
+
+    protected string ErrorMessage { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,17 +59,14 @@ public partial class DashboardBase : ComponentBase
     }
 
 
-    private async Task LoadAccounts() => Accounts = await Repository.GetAllAsync();
+    private async Task LoadAccounts()
+    {
+        Accounts = await Repository.GetAllAsync();
+    }
 
     protected void OpenAddDialog()
     {
-        NewAccount = new Account
-        {
-            Id = string.Empty,
-            Nickname = string.Empty,
-            Username = string.Empty,
-            Password = string.Empty,
-        };
+        NewAccount = new Account();
         ErrorMessage = string.Empty;
         ShowAddDialog = true;
     }
@@ -87,19 +80,28 @@ public partial class DashboardBase : ComponentBase
 
     protected void OpenEditDialog(string accountId)
     {
-        var account = Accounts.FirstOrDefault(a => a.Id == accountId);
-        if (account != null)
+        try
         {
+            var account = Accounts.First(a => a.Id == accountId)
+                          ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
+
             EditAccountModel = new Account
             {
                 Id = account.Id,
-                Nickname = account.Nickname,
-                Username = account.Username,
-                Region = account.Region,
-                EncryptedPassword = account.EncryptedPassword,
+                Nickname = account.Nickname.Trim(),
+                Username = account.Username.Trim(),
+                Region = account.Region?.Trim().ToUpperInvariant(),
+                EncryptedPassword = account.EncryptedPassword
             };
-            ErrorMessage = string.Empty;
+
             ShowEditDialog = true;
+            ErrorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error opening edit dialog for account {AccountId}", accountId);
+            ErrorMessage = "Failed to open account for editing";
+            ShowEditDialog = false;
         }
     }
 
@@ -121,6 +123,7 @@ public partial class DashboardBase : ComponentBase
                 ErrorMessage = "Nickname must be in the format 'name#tag', with up to 5 characters after '#'.";
                 return;
             }
+
             if (string.IsNullOrWhiteSpace(NewAccount.Username))
             {
                 ErrorMessage = "Username is required!";
@@ -167,6 +170,7 @@ public partial class DashboardBase : ComponentBase
                 ErrorMessage = "Nickname must be in the format 'name#tag', with up to 5 characters after '#'.";
                 return;
             }
+
             if (string.IsNullOrWhiteSpace(EditAccountModel.Username))
             {
                 ErrorMessage = "Username is required!";
@@ -210,7 +214,10 @@ public partial class DashboardBase : ComponentBase
         await LoadAccounts();
     }
 
-    protected void CancelDelete() => ShowDeleteConfirmation = false;
+    protected void CancelDelete()
+    {
+        ShowDeleteConfirmation = false;
+    }
 
     protected async Task Login(Account account)
     {
@@ -219,15 +226,17 @@ public partial class DashboardBase : ComponentBase
 
     protected static async Task OpenBuyMeACoffee()
     {
-        const string url = "https://buymeacoffee.com/kermo";
-        
+        const string url = "https://linktr.ee/kermottos";
+
         await Launcher.Default.OpenAsync(url);
     }
-    
+
     private bool ValidateNickname(string nickname)
     {
         if (string.IsNullOrWhiteSpace(nickname))
+        {
             return false;
+        }
 
         var regex = new Regex(@"^[^#]+#[^#]{1,5}$");
         return regex.IsMatch(nickname);

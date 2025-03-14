@@ -6,15 +6,15 @@ namespace RiotAccountManager.MAUI.Services.RiotClientService;
 
 public class RiotClientService : IRiotClientService
 {
-    private readonly IRiotClientProcessService _processService;
     private readonly IRiotClientLockfileService _lockfileService;
-    private readonly IRiotClientUiAutomationService _uiAutomationService;
     private readonly ILogger<RiotClientService> _logger;
+    private readonly IRiotClientProcessService _processService;
+    private readonly IRiotClientUiAutomationService _uiAutomationService;
 
     public RiotClientService(
         IRiotClientProcessService processService,
         IRiotClientLockfileService lockfileService,
-        IRiotClientUiAutomationService uiAutomationService, 
+        IRiotClientUiAutomationService uiAutomationService,
         ILogger<RiotClientService> logger)
     {
         _processService = processService;
@@ -30,7 +30,7 @@ public class RiotClientService : IRiotClientService
             _logger.LogInformation("Initiating auto-login process.");
             await KillLeagueClientAsync();
 
-            await Task.Delay(100); // Brief delay after killing client processes
+            //await Task.Delay(100); // Brief delay after killing client processes
 
             var clientPath = _processService.FindRiotClientPath();
             if (clientPath == null)
@@ -41,7 +41,8 @@ public class RiotClientService : IRiotClientService
 
             if (!_processService.IsClientRunning())
             {
-                _logger.LogInformation("Riot Client is not running. Starting client process from path: {ClientPath}", clientPath);
+                _logger.LogInformation("Riot Client is not running. Starting client process from path: {ClientPath}",
+                    clientPath);
                 _processService.StartClientProcess(clientPath);
                 _logger.LogInformation("Waiting for Riot Client to become ready via lockfile.");
                 await _lockfileService.WaitForClientReady();
@@ -51,15 +52,15 @@ public class RiotClientService : IRiotClientService
             await Task.Delay(5000);
 
             _logger.LogInformation("Automating login UI.");
-            _uiAutomationService.AutomateLoginUi(account);
+            await _uiAutomationService.AutomateLoginUi(account);
             _logger.LogInformation("Auto-login process completed successfully.");
-            
+
             return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during auto-login process.");
-            
+
             return false;
         }
     }
@@ -77,7 +78,7 @@ public class RiotClientService : IRiotClientService
                 "LeagueCrashHandler",
                 "LeagueClientUxRender",
                 "LeagueClientUx",
-                "LeagueClient",
+                "LeagueClient"
             };
 
             var allProcessesKilled = false;
@@ -91,18 +92,18 @@ public class RiotClientService : IRiotClientService
                 {
                     var processes = Process.GetProcessesByName(processName);
                     foreach (var process in processes)
-                    {
                         try
                         {
-                            _logger.LogInformation("Terminating process {ProcessName} (ID: {ProcessId}).", process.ProcessName, process.Id);
+                            _logger.LogInformation("Terminating process {ProcessName} (ID: {ProcessId}).",
+                                process.ProcessName, process.Id);
                             process.Kill();
                             allProcessesKilled = false;
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogWarning(ex, "Failed to terminate process {ProcessName} (ID: {ProcessId}).", process.ProcessName, process.Id);
+                            _logger.LogWarning(ex, "Failed to terminate process {ProcessName} (ID: {ProcessId}).",
+                                process.ProcessName, process.Id);
                         }
-                    }
                 }
 
                 if (!allProcessesKilled)
@@ -111,6 +112,7 @@ public class RiotClientService : IRiotClientService
                     await Task.Delay(1000);
                 }
             }
+
             _logger.LogInformation("All target client processes have been terminated.");
         }
         catch (Exception ex)
