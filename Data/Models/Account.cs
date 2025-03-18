@@ -13,6 +13,7 @@ public class Account
     public string Password { get; set; } = string.Empty;
     public string? Nickname { get; set; }
     public string Region { get; set; } = string.Empty;
+    public DateTime? LastLogin { get; set; }
 
     public string GetDecryptedPassword(IEncryptionService encryptionService)
     {

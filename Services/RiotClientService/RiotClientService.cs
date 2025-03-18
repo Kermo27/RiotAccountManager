@@ -53,6 +53,7 @@ public class RiotClientService : IRiotClientService
 
             _logger.LogInformation("Automating login UI.");
             await _uiAutomationService.AutomateLoginUi(account);
+            account.LastLogin = DateTime.UtcNow;
             _logger.LogInformation("Auto-login process completed successfully.");
 
             return true;

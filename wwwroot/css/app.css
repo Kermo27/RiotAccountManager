@@ -1,32 +1,13 @@
-﻿/*#if (SampleContent)*/
+﻿/* Base styles */
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: #1a1a1a;
+    color: #f7f7f7;
+    margin: 0;
+    padding: 0;
 }
 
-a, .btn-link {
-    color: #006bb7;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-.content {
-    padding-top: 1.1rem;
-}
-
-/*#endif*/
-h1:focus {
-    outline: none;
-}
-
+/* Blazor specific styles */
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
@@ -68,6 +49,7 @@ h1:focus {
     content: "An error has occurred."
 }
 
+/* iOS Safe Area Support */
 .status-bar-safe-area {
     display: none;
 }
@@ -91,24 +73,25 @@ h1:focus {
 .app-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 5px 15px 15px;
+    padding: 20px;
 }
 
 .app-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    padding: 12px;
-    background: #1a1a1a;
-    border-radius: 8px;
-    margin-top: 0;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #2a2a2a;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .app-title {
     color: #ff4654;
     margin: 0;
-    flex-grow: 1;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .icon-button {
@@ -120,25 +103,41 @@ h1:focus {
     cursor: pointer;
 }
 
+/* Account List Styles */
 .account-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: #2a2a2a;
+    border-radius: 12px;
+    color: #888;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #ff4654;
 }
 
 .account-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 20px;
     background: #2a2a2a;
-    border-radius: 8px;
-    transition: transform 0.2s;
-    color: #f7f7f7;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .account-item:hover {
     transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .account-info {
@@ -148,16 +147,54 @@ h1:focus {
 }
 
 .account-icon {
+    width: 40px;
+    height: 40px;
     background: #ff4654;
-    padding: 10px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.account-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.account-nickname {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.account-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #888;
 }
 
 .region-badge {
     background: #3a3a3a;
-    padding: 2px 8px;
+    padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    color: #ff4654;
+    font-weight: 500;
+}
+
+.last-login {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.last-login i {
+    color: #ff4654;
 }
 
 .account-actions {
@@ -165,116 +202,143 @@ h1:focus {
     gap: 10px;
 }
 
+/* Modal Styles */
 .modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 .account-modal {
-    background: #1a1a1a;
+    background: #2a2a2a;
     color: #f7f7f7;
-    padding: 20px;
-    border-radius: 8px;
+    padding: 25px;
+    border-radius: 12px;
     width: 90%;
     max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ff4654;
+    font-weight: 500;
 }
 
 .form-control {
     width: 100%;
-    padding: 8px;
-    background: #2a2a2a;
+    padding: 10px;
+    background: #1a1a1a;
     border: 1px solid #3a3a3a;
     color: white;
-    border-radius: 4px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
-/* Stylowanie placeholderów */
+.form-control:focus {
+    outline: none;
+    border-color: #ff4654;
+    box-shadow: 0 0 0 2px rgba(255, 70, 84, 0.2);
+}
+
 .form-control::placeholder {
-    color: #6c757d;
-    opacity: 0.7;
-    font-style: italic;
+    color: #666;
 }
 
-/* Styl dla nieaktywnej opcji w select */
-select.form-control option[disabled][selected] {
-    color: #6c757d;
-    background-color: #2a2a2a;
+.error-message {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Styl przy focusie */
-.form-control:focus::placeholder {
-    color: transparent;
+.form-footer {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 25px;
 }
 
-/* Base button styles */
+/* Confirmation Modal */
+.confirmation-modal {
+    background: #2a2a2a;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.confirmation-modal h3 {
+    color: #ff4654;
+    margin: 0 0 15px 0;
+}
+
+.confirmation-modal p {
+    margin: 0 0 20px 0;
+    color: #ddd;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Button Styles */
 .action-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 20px; /* Większe zaokrąglenie */
-    font-size: 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    gap: 6px;
-    min-width: 32px;
-    min-height: 32px;
-}
-
-/* Icon styling */
-.btn-icon {
-    font-size: 1.2rem; /* Control icon size */
-    margin: 0; /* Remove default margins */
-}
-
-/* Edit Button */
-.edit-btn {
-    background-color: #17a2b8;
-    color: white;
-    padding: 8px;
+    gap: 8px;
     min-width: 40px;
-    border-radius: 15px; /* Lekko mniejsze zaokrąglenie */
-}
-
-/* Login Button */
-.login-btn {
-    background-color: #ff4654;
+    min-height: 40px;
     color: white;
-    padding: 8px;
-    min-width: 40px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
 }
 
-/* Delete Button */
-.delete-btn {
-    background-color: #dc3545;
-    padding: 8px;
-    min-width: 40px;
-    color: white;
-    border-radius: 15px;
-}
-
-/* Hover effects */
 .action-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsywność */
+.login-btn { background: #28a745; }
+.edit-btn { background: #ffc107; color: #000; }
+.delete-btn { background: #dc3545; }
+
+.btn-text {
+    display: none;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .btn-text {
+        display: inline;
+    }
+}
+
 @media (max-width: 600px) {
     .app-container {
         padding: 10px;
@@ -283,191 +347,21 @@ select.form-control option[disabled][selected] {
     .account-item {
         flex-direction: column;
         align-items: flex-start;
+        gap: 15px;
+    }
+
+    .account-actions {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .action-btn {
-        padding: 4px 8px;
-        min-width: 28px;
-        min-height: 28px;
+        padding: 8px;
+        min-width: 36px;
+        min-height: 36px;
     }
 
-    .btn-icon {
-        width: 16px;
-        height: 16px;
+    .btn-text {
+        display: none;
     }
-
-    .login-btn {
-        padding: 6px 12px;
-    }
-}
-
-.account-details {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.account-info-section {
-    background: #2a2a2a;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
-
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid #3a3a3a;
-}
-
-.detail-item:last-child {
-    border-bottom: none;
-}
-
-.detail-label {
-    color: #ff4654;
-    font-weight: 500;
-}
-
-.detail-value {
-    color: #fff;
-}
-
-.region-badge {
-    background: #3a3a3a;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.ranked-section {
-    background: #2a2a2a;
-    border-radius: 8px;
-    padding: 10px 0;
-    margin: 20px 0;
-}
-
-.section-title {
-    color: #ff4654;
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.ranked-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.ranked-item {
-    background: #1a1a1a;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.wallet-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.wallet-item {
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.be {
-    background: #2a5d8a;
-}
-
-.rp {
-    background: #943434;
-}
-
-.warning-message {
-    background: #ff4654;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.fetch-btn {
-    width: 100%;
-    margin: 20px 0;
-    padding: 12px;
-}
-
-.not-found {
-    text-align: center;
-    padding: 40px;
-    color: #ff4654;
-}
-
-/* Dodaj style dla modala potwierdzenia */
-.confirmation-modal {
-    background: #2a2a2a;
-    padding: 25px;
-    border-radius: 10px;
-    max-width: 400px;
-    text-align: center;
-}
-
-.confirmation-modal h3 {
-    color: #ff4654;
-    margin-top: 0;
-}
-
-.confirmation-modal p {
-    margin: 15px 0;
-    color: #ddd;
-}
-
-.confirmation-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.confirm-btn {
-    background: #dc3545;
-    color: white;
-    padding: 8px 25px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.confirm-btn:hover {
-    background: #c82333;
-}
-
-.cancel-btn {
-    background: #6c757d;
-    color: white;
-    padding: 8px 25px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.cancel-btn:hover {
-    background: #5a6268;
-}
-
-.error-message {
-    color: #c82333;
 }

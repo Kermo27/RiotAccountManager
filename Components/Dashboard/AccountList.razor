@@ -1,54 +1,66 @@
 ﻿@using RiotAccountManager.MAUI.Data.Models
-
 <div class="account-list">
-    @foreach (var account in Accounts)
+    @if (Accounts == null || !Accounts.Any())
     {
-        <div class="account-item" @key="account.Id">
-            <div class="account-info">
+        <div class="empty-state">
+            <i class="fas fa-user-circle"></i>
+            <p>No accounts added yet. Click the "Add account" button to get started!</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var account in Accounts)
+        {
+            <div class="account-item" @key="account.Id">
+                <div class="account-info">
+                    <div class="account-details">
+                        <h3 class="account-nickname">@account.Nickname</h3>
+                        <div class="account-meta">
+                            <span class="region-badge">@account.Region</span>
+                            @if (account.LastLogin.HasValue)
+                            {
+                                <span class="last-login">
+                                    <i class="fas fa-clock"></i>
+                                    Last login: @account.LastLogin.Value.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-                <div class="account-details">
-                    <h3 class="account-nickname">@account.Nickname</h3>
-                    <span class="account-region">@account.Region</span>
+                <div class="account-actions">
+                    <button class="action-btn login-btn"
+                            @onclick="@(() => OnLoginRequested.InvokeAsync(account))"
+                            title="Login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="btn-text">Login</span>
+                    </button>
+
+                    <button class="action-btn edit-btn"
+                            @onclick="@(() => OnEditRequested.InvokeAsync(account.Id))"
+                            title="Edit">
+                        <i class="fas fa-edit"></i>
+                        <span class="btn-text">Edit</span>
+                    </button>
+
+                    <button class="action-btn delete-btn"
+                            @onclick="@(() => OnDeleteRequested.InvokeAsync(account.Id))"
+                            title="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                        <span class="btn-text">Delete</span>
+                    </button>
                 </div>
             </div>
-
-            <div class="account-actions">
-                <button class="action-btn login-btn"
-                        @onclick="@(() => OnLoginRequested.InvokeAsync(account))"
-                        title="Login">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span class="btn-text">Login</span>
-                </button>
-
-                <button class="action-btn edit-btn"
-                        @onclick="@(() => OnEditRequested.InvokeAsync(account.Id))"
-                        title="Edit">
-                    <i class="fas fa-edit"></i>
-                    <span class="btn-text">Edit</span>
-                </button>
-
-                <button class="action-btn delete-btn"
-                        @onclick="@(() => OnDeleteRequested.InvokeAsync(account.Id))"
-                        title="Delete">
-                    <i class="fas fa-trash-alt"></i>
-                    <span class="btn-text">Delete</span>
-                </button>
-            </div>
-        </div>
+        }
     }
 </div>
 
 @code {
+    [Parameter] public List<Account>? Accounts { get; set; }
 
-    [Parameter]
-    public List<Account>? Accounts { get; set; }
-    
-    [Parameter]
-    public EventCallback<Account> OnLoginRequested { get; set; }
+    [Parameter] public EventCallback<Account> OnLoginRequested { get; set; }
 
-    [Parameter]
-    public EventCallback<string> OnEditRequested { get; set; }
+    [Parameter] public EventCallback<string> OnEditRequested { get; set; }
 
-    [Parameter]
-    public EventCallback<string> OnDeleteRequested { get; set; }
+    [Parameter] public EventCallback<string> OnDeleteRequested { get; set; }
 }
