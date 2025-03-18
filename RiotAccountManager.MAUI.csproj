@@ -100,10 +100,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <MauiPlatformSpecificFolder Remove="Platforms\Tizen\" />
-      <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\" />
-      <MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
-      <MauiPlatformSpecificFolder Remove="Platforms\Android\" />
+        <MauiPlatformSpecificFolder Remove="Platforms\Tizen\"/>
+        <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\"/>
+        <MauiPlatformSpecificFolder Remove="Platforms\iOS\"/>
+        <MauiPlatformSpecificFolder Remove="Platforms\Android\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Components\Dashboard\DeleteConfirmationModal.razor.css">
+            <DependentUpon>DeleteConfimationModal.razor</DependentUpon>
+        </None>
     </ItemGroup>
 
 </Project>
