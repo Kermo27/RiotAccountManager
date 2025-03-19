@@ -89,6 +89,7 @@
         <Compile Update="Components\Pages\Dashboard.razor.cs">
             <DependentUpon>Dashboard.razor</DependentUpon>
         </Compile>
+        <Compile Remove="Services\ThemeService\ThemeService.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -97,6 +98,8 @@
 
     <ItemGroup>
         <Folder Include="Resources\Images\"/>
+        <Folder Include="Services\GameService\" />
+        <Folder Include="Services\ThemeService\" />
     </ItemGroup>
 
     <ItemGroup>
