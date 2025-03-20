@@ -21,7 +21,7 @@
                             {
                                 <span class="last-login">
                                     <i class="fas fa-clock"></i>
-                                    Last login: @account.LastLogin.Value.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                    Last login: @(account.LastLogin?.ToString("g") ?? "Never")
                                 </span>
                             }
                         </div>

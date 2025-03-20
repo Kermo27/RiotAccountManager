@@ -221,6 +221,16 @@ public class DashboardBase : ComponentBase
 
     protected async Task Login(Account account)
     {
+        account.LastLogin = DateTime.Now;
+
+        var index = Accounts.FindIndex(a => a.Id == account.Id);
+        if (index != -1)
+        {
+            Accounts[index] = account;
+        }
+
+        await Repository.SaveAllAsync(Accounts);
+
         await RiotClient.AutoLogin(account);
     }
 
