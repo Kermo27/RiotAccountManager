@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using RiotAccountManager.MAUI.Components.Dashboard
+@using RiotAccountManager.MAUI.Data
 @inherits DashboardBase
 
 <div class="app-container">
@@ -14,7 +15,7 @@
     <AddAccountModal
         Show="ShowAddDialog"
         Account="NewAccount"
-        Regions="Regions"
+        Regions="Constants.Regions"
         ErrorMessage="@ErrorMessage"
         OnClose="CloseAddDialog"
         OnSave="SaveNewAccount"/>
@@ -22,7 +23,7 @@
     <EditAccountModal
         Show="ShowEditDialog"
         EditAccountModel="EditAccountModel"
-        Regions="Regions"
+        Regions="Constants.Regions"
         ErrorMessage="@ErrorMessage"
         OnClose="CloseEditDialog"
         OnSave="SaveEditedAccount"/>

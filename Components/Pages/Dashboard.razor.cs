@@ -10,24 +10,7 @@ namespace RiotAccountManager.MAUI.Components.Pages;
 
 public class DashboardBase : ComponentBase
 {
-    protected readonly List<string> Regions = new()
-    {
-        "EUW",
-        "NA",
-        "EUNE",
-        "BR",
-        "TR",
-        "RU",
-        "OCE",
-        "LAN",
-        "LAS",
-        "JP",
-        "KR"
-    };
-
     private string _accountToDeleteId = string.Empty;
-
-
     protected List<Account> Accounts = new();
     protected Account EditAccountModel = new();
     protected Account NewAccount = new();

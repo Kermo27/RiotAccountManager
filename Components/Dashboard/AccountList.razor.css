@@ -24,12 +24,20 @@
 
 .action-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.login-btn { background: #28a745; }
-.edit-btn { background: #ffc107; }
-.delete-btn { background: #dc3545; }
+.login-btn {
+    background: #28a745;
+}
+
+.edit-btn {
+    background: #ffe500;
+}
+
+.delete-btn {
+    background: #dc3545;
+}
 
 .btn-text {
     display: none;

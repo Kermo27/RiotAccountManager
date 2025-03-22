@@ -1,6 +1,8 @@
 # RiotAccountManager
 
-RiotAccountManager is a simple app built with .NET MAUI that allows users to manage their Riot game accounts easily. The app features a user-friendly interface for logging in, editing, and deleting account details. Data is stored locally in encrypted JSON files to ensure account security.
+RiotAccountManager is a simple app built with .NET MAUI that allows users to manage their Riot game accounts easily. The
+app features a user-friendly interface for logging in, editing, and deleting account details. Data is stored locally in
+encrypted JSON files to ensure account security.
 
 ## Features
 
@@ -33,13 +35,13 @@ Refer to the [TODO](#todo) section for upcoming features.
 ## TODO
 
 - [ ] **Improve UI/UX**: Enhance the visual interface and interaction for a more intuitive user experience.
-- [ ] **Add Custom Themes**: Allow users to choose or create custom themes within the application.
-- [ ] **Unit Testing & CI/CD**: Improve code quality and streamline deployments by integrating automated tests and CI/CD pipelines.
 - [ ] **Additional Encryption Enhancements**: Expand encryption options and improve overall data security.
 
 ## Contributing
 
-Contributions are welcome! Feel free to fork the repository and submit pull requests. Please adhere to the following guidelines:
+Contributions are welcome! Feel free to fork the repository and submit pull requests. Please adhere to the following
+guidelines:
+
 - Create a new branch for each significant change.
 - Write clear and concise commit messages.
 - Ensure your code is well-tested.
