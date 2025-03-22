@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 using RiotAccountManager.MAUI.Extensions;
 using Serilog;
 
@@ -28,6 +30,13 @@ public static class MauiProgram
         builder.Services.AddApplicationServices();
 
         builder.Logging.AddSerilog();
+
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream("RiotAccountManager.MAUI.appsettings.json");
+        var config = new ConfigurationBuilder()
+            .AddJsonStream(stream)
+            .Build();
+        builder.Configuration.AddConfiguration(config);
 
         return builder.Build();
     }

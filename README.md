@@ -34,7 +34,7 @@ Refer to the [TODO](#todo) section for upcoming features.
 
 ## TODO
 
-- [ ] **Improve UI/UX**: Enhance the visual interface and interaction for a more intuitive user experience.
+- [X] **Improve UI/UX**: Enhance the visual interface and interaction for a more intuitive user experience.
 - [ ] **Additional Encryption Enhancements**: Expand encryption options and improve overall data security.
 
 ## Contributing

@@ -1,5 +1,6 @@
 ﻿using RiotAccountManager.MAUI.Data.Repositories;
 using RiotAccountManager.MAUI.Services.EncryptionService;
+using RiotAccountManager.MAUI.Services.RiotApiService;
 using RiotAccountManager.MAUI.Services.RiotClientService;
 using WindowsInput;
 
@@ -15,8 +16,11 @@ public static class ServiceExtensions
         services.AddScoped<IRiotClientProcessService, RiotClientProcessService>();
         services.AddScoped<IRiotClientLockfileService, RiotClientLockfileService>();
         services.AddScoped<IRiotClientUiAutomationService, RiotClientUiAutomationService>();
+        services.AddScoped<IRiotApiService, RiotApiService>();
 
         services.AddSingleton<IInputSimulator, InputSimulator>();
+        
+        services.AddMemoryCache();
 
         return services;
     }

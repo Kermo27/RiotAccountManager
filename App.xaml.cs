@@ -14,3 +14,4 @@ public partial class App : Application
         return new Window(new MainPage()) { Title = "Riot Account Manager" };
     }
 }
+    

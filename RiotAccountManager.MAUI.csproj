@@ -64,6 +64,9 @@
 
     <ItemGroup>
         <PackageReference Include="H.InputSimulator" Version="1.5.0"/>
+        <PackageReference Include="Kunc.RiotGames.Api" Version="0.10.0" />
+        <PackageReference Include="Kunc.RiotGames.Core" Version="0.10.0" />
+        <PackageReference Include="Kunc.RiotGames.Lol.DataDragon" Version="0.10.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
@@ -98,8 +101,6 @@
 
     <ItemGroup>
         <Folder Include="Resources\Images\"/>
-        <Folder Include="Services\GameService\" />
-        <Folder Include="Services\ThemeService\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -113,6 +114,11 @@
         <None Update="Components\Dashboard\DeleteConfirmationModal.razor.css">
             <DependentUpon>DeleteConfimationModal.razor</DependentUpon>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="appsettings.json" />
+      <EmbeddedResource Include="appsettings.json" />
     </ItemGroup>
 
 </Project>

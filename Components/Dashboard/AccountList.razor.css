@@ -45,6 +45,173 @@
     font-weight: 500;
 }
 
+.accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.account-card {
+    background: #2a2e35;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.account-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.summoner-name {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.region-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Region colors */
+.region-badge.euw { background: #4CAF50; color: white; }
+.region-badge.na { background: #2196F3; color: white; }
+.region-badge.eune { background: #9C27B0; color: white; }
+
+.stats-container {
+    margin: 1rem 0;
+}
+
+.rank-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.rank {
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.win-loss {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.wins { color: #4CAF50; }
+.losses { color: #F44336; }
+.win-rate { color: #9E9E9E; }
+
+.no-champions {
+    color: #666;
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+}
+
+.top-champions {
+    margin-top: 1rem;
+}
+
+.champion-mastery {
+    margin-bottom: 1rem;
+}
+
+.mastery-container {
+    background: #2a2e35;
+    border-radius: 4px;
+    height: 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mastery-bar {
+    background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+    height: 100%;
+    transition: width 0.3s ease-out;
+}
+
+.mastery-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    align-items: center;
+    height: 100%;
+    color: white;
+}
+
+.level {
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.points {
+    font-family: monospace;
+}
+
+.card-footer {
+    margin-top: 1rem;
+    border-top: 1px solid #37474F;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #9E9E9E;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.icon-btn:hover {
+    color: #fff;
+}
+
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: #9E9E9E;
+}
+
+.retry-btn {
+    background: none;
+    border: none;
+    color: #721c24;
+    margin-left: auto;
+    cursor: pointer;
+}
+
 @media (min-width: 768px) {
     .action-btn {
         padding: 8px 16px;

@@ -1,6 +1,17 @@
-﻿@using RiotAccountManager.MAUI.Data.Models
-<div class="account-list">
-    @if (Accounts == null || !Accounts.Any())
+﻿@using System.Globalization
+@using RiotAccountManager.MAUI.Data.Models
+@using RiotAccountManager.MAUI.Services.RiotApiService
+@inject IRiotApiService RiotApiService
+
+<div class="accounts-container">
+    @if (Accounts == null)
+    {
+        <div class="loading-indicator">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Loading accounts...</span>
+        </div>
+    }
+    else if (!Accounts.Any())
     {
         <div class="empty-state">
             <i class="fas fa-user-circle"></i>
@@ -9,58 +20,158 @@
     }
     else
     {
-        @foreach (var account in Accounts)
-        {
-            <div class="account-item" @key="account.Id">
-                <div class="account-info">
-                    <div class="account-details">
-                        <h3 class="account-nickname">@account.Nickname</h3>
-                        <div class="account-meta">
-                            <span class="region-badge">@account.Region</span>
-                            @if (account.LastLogin.HasValue)
-                            {
-                                <span class="last-login">
-                                    <i class="fas fa-clock"></i>
-                                    Last Login: @account.LastLogin.Value.ToString("g")
-                                </span>
-                            }
+        <div class="accounts-grid">
+            @foreach (var account in Accounts)
+            {
+                <div class="account-card" @key="account.Id">
+                    <div class="card-header">
+                        <h3 class="summoner-name">@account.Nickname</h3>
+                        <span class="region-badge @account.Region.ToLower()">@account.Region</span>
+                    </div>
+
+                    <div class="card-body">
+                        @if (account.Stats != null)
+                        {
+                            <div class="stats-container">
+                                @if (!string.IsNullOrEmpty(account.Stats.ErrorMessage))
+                                {
+                                    <div class="stats-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        @account.Stats.ErrorMessage
+                                        <button class="retry-btn" @onclick="@(() => ReloadStats(account))">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="rank-info">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span class="rank">@account.Stats.RankSolo</span>
+                                        <span class="lp">@account.Stats.LeaguePoints LP</span>
+                                    </div>
+
+                                    <div class="win-loss">
+                                        <div class="wins">
+                                            <i class="fas fa-trophy"></i>
+                                            @account.Stats.Wins W
+                                        </div>
+                                        <div class="losses">
+                                            <i class="fas fa-times"></i>
+                                            @account.Stats.Losses L
+                                        </div>
+                                        <div class="win-rate">
+                                            @account.Stats.WinRate.ToString("0.00")% WR
+                                        </div>
+                                    </div>
+
+                                    <div class="top-champions">
+                                        <h4>Top Champions:</h4>
+                                        @{
+                                            var topChampions = account.Stats.TopChampions ?? new List<ChampionMasteryInfo>();
+                                            var maxMastery = topChampions.Any()
+                                                ? topChampions.Max(c => c.MasteryPoints)
+                                                : 1;
+                                        }
+                                        @if (topChampions.Any())
+                                        {
+                                            @foreach (var champ in topChampions)
+                                            {
+                                                <div class="champion-mastery">
+                                                    <span class="champion-name">@champ.ChampionName</span>
+                                                    <div class="mastery-container">
+                                                        <div class="mastery-bar"
+                                                             style="width: @((champ.MasteryPoints * 100.0 / maxMastery).ToString("0.00", CultureInfo.InvariantCulture))%">
+                                                        </div>
+                                                        <div class="mastery-info">
+                                                            <span class="level">Lvl @champ.ChampionLevel</span>
+                                                            <span class="points">@champ.MasteryPoints.ToString("N0")</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="no-champions">
+                                                No champion mastery data
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="stats-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading stats...
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="last-login">
+                            <i class="fas fa-clock"></i>
+                            <span>
+                                @if (account.LastLogin.HasValue)
+                                {
+                                    @account.LastLogin.Value.ToString("g")
+                                }
+                                else
+                                {
+                                    @:Never logged in
+                                }
+                            </span>
+                        </div>
+
+                        <div class="card-actions">
+                            <button class="icon-btn" @onclick="@(() => OnLoginRequested.InvokeAsync(account))" title="Login">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </button>
+                            <button class="icon-btn" @onclick="@(() => OnEditRequested.InvokeAsync(account.Id))" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="icon-btn" @onclick="@(() => OnDeleteRequested.InvokeAsync(account.Id))" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <div class="account-actions">
-                    <button class="action-btn login-btn"
-                            @onclick="@(() => OnLoginRequested.InvokeAsync(account))"
-                            title="Login">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span class="btn-text">Login</span>
-                    </button>
-
-                    <button class="action-btn edit-btn"
-                            @onclick="@(() => OnEditRequested.InvokeAsync(account.Id))"
-                            title="Edit">
-                        <i class="fas fa-edit"></i>
-                        <span class="btn-text">Edit</span>
-                    </button>
-
-                    <button class="action-btn delete-btn"
-                            @onclick="@(() => OnDeleteRequested.InvokeAsync(account.Id))"
-                            title="Delete">
-                        <i class="fas fa-trash-alt"></i>
-                        <span class="btn-text">Delete</span>
-                    </button>
-                </div>
-            </div>
-        }
+            }
+        </div>
     }
 </div>
 
 @code {
     [Parameter] public List<Account>? Accounts { get; set; }
-
     [Parameter] public EventCallback<Account> OnLoginRequested { get; set; }
-
     [Parameter] public EventCallback<string> OnEditRequested { get; set; }
-
     [Parameter] public EventCallback<string> OnDeleteRequested { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadStatsForAccounts();
+    }
+
+    private async Task LoadStatsForAccounts()
+    {
+        if (Accounts == null) return;
+
+        foreach (var account in Accounts)
+        {
+            if (account.Stats == null)
+            {
+                account.Stats = await RiotApiService.GetCachedPlayerStats(account.Nickname, account.Region);
+                StateHasChanged();
+            }
+        }
+    }
+    
+    private async Task ReloadStats(Account account)
+    {
+        account.Stats = null;
+        await LoadStatsForAccounts();
+        StateHasChanged();
+    }
 }

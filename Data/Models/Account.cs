@@ -13,6 +13,8 @@ public class Account
     public string? Nickname { get; set; }
     public string Region { get; set; } = string.Empty;
     public DateTime? LastLogin { get; set; }
+    [JsonIgnore]
+    public LeagueStats Stats { get; set; }
 
     public string GetDecryptedPassword(IEncryptionService encryptionService)
     {
