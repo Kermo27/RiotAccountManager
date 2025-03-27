@@ -17,7 +17,7 @@ public class RiotApiService : IRiotApiService
 
     public RiotApiService(IConfiguration configuration, IMemoryCache cache)
     {
-        string apiKey = configuration["RiotGames:ApiKey"];
+        var apiKey = configuration["RiotGames:ApiKey"];
         _api = RiotGamesApi.Create(x => x.ApiKey = apiKey);
         _dataDragon = LolDataDragon.Create();
         _cache = cache;
@@ -45,7 +45,7 @@ public class RiotApiService : IRiotApiService
             return stats;
         }
         
-        var entries = await _api.LolLeagueV4.LeagueEntriesForSummonerAsync(smallRegion, summoner.Id);
+        var entries = await _api.LolLeagueV4.LeagueEntriesForSummonerAsync(smallRegion, summoner.Puuid);
         var soloQueue = entries?.FirstOrDefault(e => e.QueueType == QueueType.RankedSolo5x5);
         
         var masteries = await _api.LolChampionMasteryV4.GetAllChampionMasteryEntriesAsync(smallRegion, account.Puuid);
@@ -87,8 +87,7 @@ public class RiotApiService : IRiotApiService
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
             var stats = await GetPlayerStats(riotId, region);
-        
-            // Cache errors for shorter time
+            
             if (!string.IsNullOrEmpty(stats.ErrorMessage))
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
